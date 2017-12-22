@@ -1,0 +1,21 @@
+target_default: 1_get_raw_data
+
+packages:
+  - dplyr
+  - readxl
+  
+sources:
+  - 1_get_raw_data/src/get_raw_data.R
+  
+targets:
+  1_get_raw_data:
+    depends:
+      - raw_sample
+      - raw_site
+  
+  raw_sample:
+    command: get_samples(file = 'M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data/GLEI CEC Study Data_05Oct2017.xlsx')
+    
+  raw_site:
+    command: get_sites(file = 'M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data/GLEI CEC Study Sites.csv')
+  
