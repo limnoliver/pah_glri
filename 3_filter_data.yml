@@ -1,0 +1,27 @@
+target_default: 3_filter_data
+
+packages:
+  - dplyr
+  
+include:
+  - 2_process_data.yml
+  
+sources:
+  - 3_filter_data/src/filter_data.R
+  
+targets:
+  3_filter_data:
+    depends:
+      - blanks
+      - duplicates
+      - samples
+ 
+  blanks:
+    command: filter_blanks(processed_sample)
+    
+  duplicates:
+    command: filter_duplicates(processed_sample)
+    
+  samples:
+    command: filter_samples(processed_sample)
+    
