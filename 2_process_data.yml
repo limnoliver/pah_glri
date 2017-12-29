@@ -13,6 +13,7 @@ targets:
   2_process_data:
     depends:
       - processed_sample_merge
+      - processed_sample
   
   processed_sample_merge:
     command: process_sample_merge(raw_sample, raw_site)
@@ -21,11 +22,3 @@ targets:
     command: process_nondetects(processed_sample_merge, detect.decision = I("zero"),
                                code.column = I("LAB_QUAL"), detect.code = I("U"), 
                                detect.limit.column = I("DETECT_LIMIT"))
-                               
-  blanks:
-    command: process_blanks()
-    
-  duplicates:
-    command: process_duplicates()
-    
-  

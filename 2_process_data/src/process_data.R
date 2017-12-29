@@ -52,8 +52,11 @@ process_sample_merge <- function(raw_sample, raw_site){
   # get rid of columns that are unnecessary
   dat.clean <- select(dat.clean, -c(1:7, 14:21))
   
+  # merge with compound metadata
+  dat.clean2 <- get_compound_info(pah_dat = dat.clean, merge_type = 'name', merge_col = 'PARAM_SYNONYM')
+  
   # export dat.clean
-  return(dat.clean)
+  return(dat.clean2)
   
 }
 
@@ -72,11 +75,3 @@ process_nondetects <- function(processed_sample_merge, detect.decision = "zero",
  
 }
 
-# return blanks and corresponding samples with same state/site id/date
-# this will return samples, duplicates, and blanks for sites with blanks
-process_blanks <- function(processed_sample) {
-  processed_sample$unique_id <- paste(processed_sample$State, processed_sample$STAT_ID, processed_sample$COLLECTION_DATE_NOTIME, sep = "_")
-  blank_sample <- filter(processed_sample, processed_sample$FIELD_QC_CODE == "FB")
-  blank_sample_ids <- unique(blank_sample$unique_id)
-  corresponding_samples <- filter(processed_sample, unique_id %in% blank_sample_ids)
-}
