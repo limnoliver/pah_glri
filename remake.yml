@@ -1,0 +1,12 @@
+target_default: all
+
+packages:
+  - remake
+
+include:
+  - 3_filter_data.yml
+
+targets:
+  all:
+    depends: 
+      - samples
