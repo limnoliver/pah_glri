@@ -1,29 +1,34 @@
 merge_studies <- function() {
+  #############################
+  # get MKE study
   mke <- raw_mke
   # first, handle zeros in mke data by turning values below dl to 0
   mke$remark_cd[is.na(mke$remark_cd)] <- "d"  # if remark_cd is blank it's a detection
   mke$remark_cd <- ifelse(mke$remark_cd == "E", "d", mke$remark_cd)  # classify Estimated values as detections
-  mke$valuetouse <- ifelse(mke$remark_cd == "d", mke$result_va, 0)
-  mke.m <- select(mke, site_no, parm_cd, valuetouse) %>%
+  mke$MKE<- ifelse(mke$remark_cd == "d", mke$result_va, 0)
+  mke.m <- select(mke, site_no, parm_cd,MKE) %>%
     rename(pcode = parm_cd)
   
-  # merge MKE samples with GLRI samples
+  ##############################
+  # get GLRI samples
+  
   glri <- samples
   glri.m <- mutate(glri, site_no = paste0("0", STAID)) %>%
-    select(site_no, pcode, RESULT, PARAM_SYNONYM, EPApriority16)
+    select(site_no, pcode, RESULT, PARAM_SYNONYM, EPApriority16) %>%
+    rename(GLRI = RESULT)
   
   ###########################
-  # get pilot study from MKE
+  # get PILOT study data
   pilot <- read_excel('M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/WY 2017 planning/PilotTest2016/Data/Sediment data/GLRI2016PilotSediment.xlsx',
                       skip = 8, sheet = "Main")
-  pilot.m <- pilot[-(1:14), -2]
-  pilot.m <- pilot.m[-(39:47),]
+  pilot <- pilot[-(1:14), -2]
+  pilot.m <- pilot[-(39:47),]
   
-  grep("surrogate", pilot.m$`Client ID`, ignore.case = T)
   names(pilot.m)[seq(2, 42, 2)] <- gsub("-MIR-SED", "", names(pilot.m)[seq(2, 42, 2)])
   names(pilot.m)[seq(3, 43, by = 2)] <- paste0(names(pilot.m)[seq(2, 42, 2)], "-R")
   vals <- select(pilot.m, 1, seq(2, 42, 2)) %>%
     gather(site_id, value, -`Client ID`)
+  vals$value <- as.numeric(vals$value)
   
   remarks <- select(pilot.m, 1, seq(3, 43, by = 2))
   names(remarks)[2:22] <- names(pilot.m)[seq(2, 42, 2)]
@@ -31,8 +36,13 @@ merge_studies <- function() {
   names(vals)[1] <- "compound"
   names(remarks)[1] <- "compound"
   
-  pilot.merged <- left_join(vals, remarks)
-  pilot.merged <- mutate(pilot.merged, STAT_ID = gsub("-A|-B|-C", "",site_id))
+  pilot.m <- left_join(vals, remarks)
+  pilot.m <- mutate(pilot.m, STAT_ID = gsub("-A|-B|-C", "",site_id)) %>%
+    rename(PILOT = value)
+  
+  # if remark = U, the value is censored
+  pilot.m$PILOT <- ifelse(pilot.m$remark %in% "U", 0, pilot.m$PILOT)
+  pilot.m <- select(pilot.m, -remark)
   
   #find MKE sites from glri dataset and merge to get site numbers
   mke.sites <- glri[grep("milwaukee", glri$Watershed, ignore.case = T), ]
@@ -45,8 +55,8 @@ merge_studies <- function() {
     distinct() %>%
     rename(compound = PARAM_SYNONYM)
   
-  pilot.merged <- left_join(pilot.merged, mke.sites)
-  pilot.merged <- left_join(pilot.merged, compound.m)
+  pilot.m <- left_join(pilot.m, mke.sites)
+  pilot.m <- left_join(pilot.m, compound.m)
   
   # merge datasets based on site number and pcode
   df <- inner_join(mke.m, glri.m, by = c('site_no', 'pcode')) %>%
