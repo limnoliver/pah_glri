@@ -1,4 +1,5 @@
 # read in raw data
+library(readxl)
 
 get_samples <- function(file) {
   dat <- read_excel(file)
@@ -41,5 +42,25 @@ get_mke_data <- function() {
   endDate <- '2014-09-01'
   mke_pah <- getPAH(sites, pcodes, startDate, endDate)
   return(mke_pah)
+}
+
+get_glri6_data <- function() {
+  # find pcodes for OWC schedule #5433
+  url <- "http://nwqlqc/servlets_u/AnalyticalServicesGuide?srchStr=5433&srchType=sched&mCrit=exact&oFmt=xl"
+  destfile <- "AnalyticalServicesGuide_srchStr_5433_srchType_sched_mCrit_exact_oFmt_xl.xls"
+  curl::curl_download(url, destfile)
+  schedule_5433 <- read_excel(destfile)
+  # filter pcodes to include only those in Austin's list of pcodes (I am assuming)
+  # this is complete - maybe verify this
+  pcodes.keep <- filter(schedule_5433, `Parameter Code` %in% pah_pcodes) %>%
+    select(`Parameter Code`, `Parameter Name`)
+  sites <- raw_site[['STAID']]
+  sites <- ifelse(nchar(sites) != 15, paste0("0", sites), sites)
+  test.site <- sites[26]
+  startDate <- '2017-01-01'
+  endDate <- '2017-12-31'
+  glri6_pah <- getPAH(sites, pcodes = pcodes.keep[[1]], startDate, endDate)
+
+  return(glri6_pah)
 }
   
