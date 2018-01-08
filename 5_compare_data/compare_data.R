@@ -1,3 +1,5 @@
+library(dplyr)
+library(tidyr)
 merge_studies <- function() {
   #############################
   # get MKE study
@@ -13,8 +15,8 @@ merge_studies <- function() {
   # get GLRI samples
   
   glri <- samples
-  glri.m <- mutate(glri, site_no = paste0("0", STAID)) %>%
-    select(site_no, pcode, RESULT, PARAM_SYNONYM, EPApriority16) %>%
+  glri.m <- mutate(glri, site_no = ifelse(nchar(STAID) != 15, paste0("0", STAID), STAID)) %>%
+    select(site_no, pcode, RESULT) %>%
     rename(GLRI = RESULT)
   
   ###########################
@@ -58,11 +60,48 @@ merge_studies <- function() {
   pilot.m <- left_join(pilot.m, mke.sites)
   pilot.m <- left_join(pilot.m, compound.m)
   
+  # because there are triplicates, and we'll want to compare individual samples
+  # and the mean of samples, create a mean value that will have the original site_no,
+  # but then the triplicate samples have an a-b-c attached to the site no so 
+  # there is no attempt to double merge those samples
+  
+  pilot.avg <- group_by(pilot.m, site_no, pcode, compound) %>%
+    summarize(PILOT = mean(PILOT))
+  
+  pilot.m <- mutate(pilot.m, 
+                    site_no = paste0(site_no, gsub("[[:alpha:]]{3}-", "", site_id)))
+  
+  pilot.m <- bind_rows(pilot.m, pilot.avg) %>%
+    select(site_no, pcode, PILOT)
+  
+  pilot.m <- mutate(pilot.m, site_no = ifelse(nchar(site_no) != 15, paste0("0", site_no), site_no))
+  
+  
+  # get GLRI data that measured six PAH compounds at all sites
+  # as part of schedule 5433
+  
   # merge datasets based on site number and pcode
-  df <- inner_join(mke.m, glri.m, by = c('site_no', 'pcode')) %>%
-    rename("GLRI_conc_ppb" = "RESULT",
-           "MKE_conc_ppb" = "valuetouse",
-           "Compound" = "PARAM_SYNONYM")
+  # should keep all possible site numbers to be filtered out 
+  # later once all data are merged
+  df <- full_join(mke.m, glri.m, by = c('site_no', 'pcode'))
+  
+  df <- full_join(df, pilot.m, by = c('site_no', 'pcode'))
+  
+  # now merge in site/compound metadata 
+  names(glri)
+  site.dat <- select(glri, "State", "Watershed", "Lake", "STAID", "Site", "STAT_ID", "Lat", "Lon")
+  site.dat <- mutate(site.dat, 
+                     site_no = ifelse(nchar(STAID) != 15, paste0("0", STAID), STAID)) %>%
+    select(-STAID) %>%
+    rename(site_code = STAT_ID)
+  
+  # get as much site info as possible by merging with glri dataset which has most sites
+  df <- left_join(df, site.dat, by = 'site_no') 
+  
+  # now merge in compound metadata
+  compound.dat <- select(glri, )
+  # write in merge of glri6 data when it becomes available
+  return(df)
   
   
   p <- ggplot(df, aes(x = GLRI_conc_ppb, y = MKE_conc_ppb)) +
