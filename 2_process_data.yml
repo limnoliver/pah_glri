@@ -23,5 +23,5 @@ targets:
                                code.column = I("LAB_QUAL"), detect.code = I("U"), 
                                detect.limit.column = I("DETECT_LIMIT"))
                                
-  comparison_samples:
-    command: merge_studies()
+#  comparison_samples:
+#    command: merge_studies()
