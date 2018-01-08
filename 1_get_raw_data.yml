@@ -19,6 +19,8 @@ targets:
   raw_site:
     command: get_sites(file = 'M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data/GLEI CEC Study Sites.csv')
     
-  raw_MKE:
+  raw_mke:
     command: get_mke_data()
-  
+    
+  raw_glri6:
+    command: get_glri6_data()
