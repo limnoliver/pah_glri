@@ -1,0 +1,23 @@
+target_default: 5_compare_data
+
+packages:
+  - dplyr
+  
+include:
+  - 4_summarize_data.yml
+  
+sources:
+  - 5_compare_data/src/compare_data.R
+  
+targets:
+  5_compare_data:
+    depends:
+      - all_studies
+  
+  all_studies:
+    command: merge_studies()
+    
+  MKE_GLRI_recovery: merge_recovery()
+  
+    
+    

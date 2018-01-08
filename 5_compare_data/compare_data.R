@@ -8,7 +8,7 @@ merge_studies <- function() {
   mke$remark_cd[is.na(mke$remark_cd)] <- "d"  # if remark_cd is blank it's a detection
   mke$remark_cd <- ifelse(mke$remark_cd == "E", "d", mke$remark_cd)  # classify Estimated values as detections
   mke$MKE<- ifelse(mke$remark_cd == "d", mke$result_va, 0)
-  mke.m <- select(mke, site_no, parm_cd,MKE) %>%
+  mke.m <- select(mke, site_no, parm_cd, MKE) %>%
     rename(pcode = parm_cd)
   
   ##############################
@@ -16,8 +16,8 @@ merge_studies <- function() {
   
   glri <- samples
   glri.m <- mutate(glri, site_no = ifelse(nchar(STAID) != 15, paste0("0", STAID), STAID)) %>%
-    select(site_no, pcode, RESULT) %>%
-    rename(GLRI = RESULT)
+    select(site_no, pcode, RESULT, PARAM_SYNONYM) %>%
+    rename(GLRI = RESULT, study_compound_name = PARAM_SYNONYM)
   
   ###########################
   # get PILOT study data
@@ -163,4 +163,25 @@ merge_studies <- function() {
   
   ggsave("GLRI_MKE_diff_bysite.png", p)
   
+}
+
+merge_recovery <- function() {
+
+  # get recovery data from MKE (NWQL) and GLRI (Batelle)
+  mke_recovery <- read.csv('5_compare_data/raw/NWQL_prepSpike_recoveries.csv', skip = 2)
+  
+  glri_recovery <- samples %>%
+    filter(UNIT == "PCT_REC") %>%
+    select(PARAM_SYNONYM, RESULT) %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize_at(RESULT, funs(min, median, max), na.rm = T)
+  
+  test <- data.frame(vals = c(1:12), 
+                     labs = rep(c("A", "B"), 6), 
+                     chemicals = c(rep("chem1", 6), rep("chem2", 6)))
+  test.p <- boxplot(test$vals ~ test$labs*test$chemicals)
+  test.structure <- test.p$stats
+  
+  
+  # create a boxplot out of the following values: min, 1st quartile, median, 2nd quartile, max
 }
