@@ -164,24 +164,79 @@ merge_studies <- function() {
   ggsave("GLRI_MKE_diff_bysite.png", p)
   
 }
-
+library(readxl)
 merge_recovery <- function() {
 
   # get recovery data from MKE (NWQL) and GLRI (Batelle)
-  mke_recovery <- read.csv('5_compare_data/raw/NWQL_prepSpike_recoveries.csv', skip = 2)
+  mke_recovery <- read.csv('5_compare_data/raw/NWQL_prepSpike_recoveries.csv', 
+                           skip = 2)
+  file.loc <- "M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data"
+  sample.files <- list.files("M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data")
+  sample.files <- grep("S17", sample.files, value = T)
+  sample.files <- grep(".xlsx", sample.files, value = T)
   
+  all_dat <- data.frame()
+  for (i in sample.files) {
+    temp_dat <- read_excel(file.path(file.loc, i), sheet = "MS", 
+                           skip = 21, col_names = T)
+    temp_dat_filt <- temp_dat[,c(1, grep('recovery', names(temp_dat), ignore.case = T), grep('qualifier', names(temp_dat), ignore.case = T))]
+    temp_dat_filt <- temp_dat_filt[grep("^Naphthalene$", temp_dat_filt[[1]]):grep("perylene", temp_dat_filt[[1]]),]
+    if (i != sample.files[3]) {
+      # get rid of estimates in samples where the matrix spike was 
+      # < 5x greater than the sample conc
+      temp_dat_filt$`% Recovery` <- ifelse(temp_dat_filt$Qualifier %in% "n", NA, temp_dat_filt$`% Recovery`)
+    }
+    all_dat <- bind_cols(temp_dat_filt, all_dat)
+  }
+  
+  glri_spikes <- for()
+  # this glri data is actually surrogates - find mke surrogates
   glri_recovery <- samples %>%
     filter(UNIT == "PCT_REC") %>%
     select(PARAM_SYNONYM, RESULT) %>%
     group_by(PARAM_SYNONYM) %>%
-    summarize_at(RESULT, funs(min, median, max), na.rm = T)
+    summarize_at(vars(RESULT), funs(min, median, max), na.rm = T)
   
-  test <- data.frame(vals = c(1:12), 
-                     labs = rep(c("A", "B"), 6), 
-                     chemicals = c(rep("chem1", 6), rep("chem2", 6)))
-  test.p <- boxplot(test$vals ~ test$labs*test$chemicals)
-  test.structure <- test.p$stats
+  glri_recovery_q <- samples %>%
+    filter(UNIT == "PCT_REC") %>%
+    select(PARAM_SYNONYM, RESULT) %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(first = quantile(RESULT, probs = 0.25),
+              third = quantile(RESULT, probs = 0.75))
   
+  glri_rec <- left_join(glri_recovery, glri_recovery_q) %>%
+    select(min, first, median, third, max) %>%
+    t()
+  compounds <- gsub("-[[:alnum:]]+", "", glri_recovery$PARAM_SYNONYM)
+  compounds <- gsub("\\(", "\\[", compounds)
+  compounds <- gsub("\\)", "\\]", compounds)
+
+  mke_recovery <- mke_recovery[mke_recovery$Parameter %in% compounds,]
   
+  mke_rec <- select(mke_recovery, Minimum, First.Quartile, Median, Third.Quartile, Maximum) %>%
+    t() %>%
+    as.matrix()
+  
+  recovery <- matrix(ncol = 8, nrow = 5)
+  recovery[,1:8] <- c(mke_rec[,1], glri_rec[,1],
+                      mke_rec[,2], glri_rec[,2],
+                      mke_rec[,3], glri_rec[,3],
+                      mke_rec[,4], glri_rec[,4]) 
+  test <- data.frame(`Percent Recovery` = c(1:24), 
+                     Lab = rep(c("A", "B"), 12), 
+                     Chemicals = c(rep("chem1", 6), rep("chem2", 6),
+                                   rep("chem3", 6), rep("chem4", 6)))
+  test.p <- boxplot(test$Percent.Recovery ~ test$Lab*test$Chemicals, col = 'red')
+  test.p$stats <- recovery
+  test.p$names <- c(compounds[1], "", compounds[2], "", compounds[3], "", compounds[4], "")
+  
+  png("Method_pctrecovery_comparison.png", height = 500, width = 1000)
+  par(mar=c(5,5,2,2))
+  bxp(z = test.p, border = c("black", "red"), outcol = "black", 
+      ylab = "Percent Recovery", ylim = c(40, 145), xaxt = 'n', cex.axis = 2, cex.lab = 2)
+  legend('topleft', legend = c("NWQL", "Batelle"), border = c('black', 'red'), 
+         cex = 2, fill = "white")
+  text(x = c(1.5, 3.5, 5.5, 7.5), y = 25, labels = compounds, xpd = T, cex = 2)
+  dev.off()
   # create a boxplot out of the following values: min, 1st quartile, median, 2nd quartile, max
 }
