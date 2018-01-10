@@ -224,18 +224,7 @@ merge_recovery <- function() {
   spikes$compound_simple <- factor(spikes$compound_simple, levels = compound.order[[1]])
   
   
-  # plot data
-  p <- ggplot(spikes, aes(x =compound_simple, y = mean, group = source)) +
-    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
-    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
-    theme_bw() +
-    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(y = "% Recovery from Spikes", x = "", 
-         title = "Comparison of matrix spike recoveries from NWQL and Battelle",
-         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
-Maximum n value for any compound Battelle = 4, NWQL = 26.")
-
-  ggsave('spike_comparison.png', p)
+  
   
   #########################################################
   # this glri data is actually surrogates - find mke surrogates
@@ -305,4 +294,22 @@ Maximum n value for any compound Battelle = 4, NWQL = 26.")
   axis(1, tick = T, labels = F)
   text(x = c(1:7), y = -10, labels = test.p$names, xpd = T, cex = 1.5, srt = 45, adj = 1)
   dev.off()
+}
+
+plot_recovery <- function(recovery_dat, plot_location) {
+  spikes <- recovery_dat[[1]]
+  # plot data
+  p <- ggplot(spikes, aes(x =compound_simple, y = mean, group = source)) +
+    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
+    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(y = "% Recovery from Spikes", x = "", 
+         title = "Comparison of matrix spike recoveries from NWQL and Battelle",
+         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
+Maximum n value for any compound Battelle = 4, NWQL = 26.")
+  
+  ggsave(file.path(plot_location, 'spike_comparison.png'), p)
+  
+  
 }
