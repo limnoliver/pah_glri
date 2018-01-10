@@ -14,6 +14,7 @@ targets:
     depends:
       - processed_sample_merge
       - processed_sample
+      - processed_mke
   
   processed_sample_merge:
     command: process_sample_merge(raw_sample, raw_site)
