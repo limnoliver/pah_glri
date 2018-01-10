@@ -262,29 +262,36 @@ Maximum n value for any compound Battelle = 4, NWQL = 26.")
   compounds <- gsub("\\(", "\\[", compounds)
   compounds <- gsub("\\)", "\\]", compounds)
 
-  mke_sur <- processed_mke %>% 
+  mke <- processed_mke %>% 
     rename(parameter_cd = parm_cd) %>%
     left_join(parameterCdFile)
-  row.keep <- grep("recovery", mke_sur$parameter_nm)
-  mke_sur <- mke_sur[row.keep, ] 
+  row.keep <- grep("recovery", mke$parameter_nm)
+  mke <- mke[row.keep, ] 
+  mke_names <- unique(mke$parameter_nm)
+  mke_names <- gsub("(^.+)(, surrogate,.+)", "\\1", mke_names, perl = T)
   
-  mke_sur_m <- group_by(mke_sur, parameter_cd) %>%
+  mke_sur_m <- group_by(mke, parameter_cd) %>%
     summarize_at(vars(result_va), funs(min, median, max), na.rm = T)
   
+  mke_sur_q <- group_by(mke, parameter_cd) %>%
+    summarize(first = quantile(result_va, probs = 0.25),
+              third = quantile(result_va, probs = 0.75))
     
+  mke_sur <- left_join(mke_sur_m, mke_sur_q) 
+
+  mke_sur <- select(mke_sur, min, first, median, third, max) %>%
+    t()
   
-  recovery <- matrix(ncol = 8, nrow = 5)
-  recovery[,1:8] <- c(mke_rec[,1], glri_rec[,1],
-                      mke_rec[,2], glri_rec[,2],
-                      mke_rec[,3], glri_rec[,3],
-                      mke_rec[,4], glri_rec[,4]) 
-  test <- data.frame(`Percent Recovery` = c(1:24), 
-                     Lab = rep(c("A", "B"), 12), 
-                     Chemicals = c(rep("chem1", 6), rep("chem2", 6),
-                                   rep("chem3", 6), rep("chem4", 6)))
-  test.p <- boxplot(test$Percent.Recovery ~ test$Lab*test$Chemicals, col = 'red')
-  test.p$stats <- recovery
-  test.p$names <- c(compounds[1], "", compounds[2], "", compounds[3], "", compounds[4], "")
+  surrogates <- matrix(ncol = 7, nrow = 5)
+  surrogates[,1:7] <- c(glri_sur, mke_sur) 
+  test <- data.frame(`Percent Recovery` = c(1:21), 
+                     Chemicals = c(rep("chem1", 3), rep("chem2", 3),
+                                   rep("chem3", 3), rep("chem4", 3),
+                                   rep("chem5", 3), rep('chem6', 3), 
+                                   rep("chem7", 3)))
+  test.p <- boxplot(test$Percent.Recovery ~ test$Chemicals, col = 'red')
+  test.p$stats <- surrogates
+  test.p$names <- c(glri_sur_names, mke_sur_names)
   
   png("Method_pctrecovery_comparison.png", height = 500, width = 1000)
   par(mar=c(5,5,2,2))
