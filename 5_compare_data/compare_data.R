@@ -227,7 +227,7 @@ merge_recovery <- function() {
   
   
   #########################################################
-  # this glri data is actually surrogates - find mke surrogates
+  # merge surrogates from MKE and glri
   glri_sur_m <- samples %>%
     filter(UNIT == "PCT_REC") %>%
     select(PARAM_SYNONYM, RESULT) %>%
@@ -273,6 +273,31 @@ merge_recovery <- function() {
   
   surrogates <- matrix(ncol = 7, nrow = 5)
   surrogates[,1:7] <- c(glri_sur, mke_sur) 
+  
+  recoveries <- list(spikes, surrogates)
+  names(recoveries) <- c('spikes', 'surrogates')
+  return(recoveries)
+}
+
+plot_spikes <- function(recovery_dat, plot_location) {
+  spikes <- recovery_dat$spikes
+  # plot data
+  p <- ggplot(spikes, aes(x =compound_simple, y = mean, group = source)) +
+    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
+    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(y = "% Recovery from Spikes", x = "", 
+         title = "Comparison of matrix spike recoveries from NWQL and Battelle",
+         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
+Maximum n value for any compound Battelle = 4, NWQL = 26.")
+  
+  ggsave(plot_location, p)
+  
+}
+
+plot_surrogates <- function(recovery_dat, plot_location) {
+  surrogates <- recovery_dat$surrogates
   test <- data.frame(`Percent Recovery` = c(1:21), 
                      Chemicals = c(rep("chem1", 3), rep("chem2", 3),
                                    rep("chem3", 3), rep("chem4", 3),
@@ -294,22 +319,4 @@ merge_recovery <- function() {
   axis(1, tick = T, labels = F)
   text(x = c(1:7), y = -10, labels = test.p$names, xpd = T, cex = 1.5, srt = 45, adj = 1)
   dev.off()
-}
-
-plot_recovery <- function(recovery_dat, plot_location) {
-  spikes <- recovery_dat[[1]]
-  # plot data
-  p <- ggplot(spikes, aes(x =compound_simple, y = mean, group = source)) +
-    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
-    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
-    theme_bw() +
-    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(y = "% Recovery from Spikes", x = "", 
-         title = "Comparison of matrix spike recoveries from NWQL and Battelle",
-         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
-Maximum n value for any compound Battelle = 4, NWQL = 26.")
-  
-  ggsave(file.path(plot_location, 'spike_comparison.png'), p)
-  
-  
 }
