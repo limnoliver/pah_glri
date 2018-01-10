@@ -19,5 +19,12 @@ targets:
     
   MKE_GLRI_recovery: merge_recovery()
   
+  5_compare_data/doc/spike_comparison.pdf: plot_spikes(MKE_GLRI_recovery, target_name)
+  
+  5_compare_data/doc/surrogate_comparison.pdf: plot_surrogates(MKE_GLRI_recovery, target_name)
+
+  
+  
+  
     
     
