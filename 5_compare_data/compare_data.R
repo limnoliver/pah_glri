@@ -307,7 +307,7 @@ plot_surrogates <- function(recovery_dat, plot_location) {
   test.p$stats <- surrogates
   test.p$names <- c(glri_sur_names, mke_names)
   
-  png("surrogate_comparison.png", height = 500, width = 1000)
+  png(plot_location, height = 500, width = 1000)
   par(mar=c(10,5,6,2))
   bxp(z = test.p, border = c(rep("black", 4), rep("red", 3)), outcol = "black", 
       ylab = "Percent Recovery", ylim = c(0, 120), cex.axis = 2, cex.lab = 2, xaxt = 'n')
