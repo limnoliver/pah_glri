@@ -22,6 +22,8 @@ targets:
     command: process_nondetects(processed_sample_merge, detect.decision = I("zero"),
                                code.column = I("LAB_QUAL"), detect.code = I("U"), 
                                detect.limit.column = I("DETECT_LIMIT"))
+  processed_mke:
+    command: process_mke()
                                
 #  comparison_samples:
 #    command: merge_studies()
