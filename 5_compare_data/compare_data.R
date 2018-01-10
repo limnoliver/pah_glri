@@ -1,14 +1,11 @@
 library(dplyr)
 library(tidyr)
+library(ggplot2)
+library(dataRetrieval)
 merge_studies <- function() {
   #############################
   # get MKE study
-  mke <- raw_mke
-  # first, handle zeros in mke data by turning values below dl to 0
-  mke$remark_cd[is.na(mke$remark_cd)] <- "d"  # if remark_cd is blank it's a detection
-  mke$remark_cd <- ifelse(mke$remark_cd == "E", "d", mke$remark_cd)  # classify Estimated values as detections
-  mke$MKE<- ifelse(mke$remark_cd == "d", mke$result_va, 0)
-  mke.m <- select(mke, site_no, parm_cd, MKE) %>%
+  mke.m <- select(processed_mke, site_no, parm_cd, MKE) %>%
     rename(pcode = parm_cd)
   
   ##############################
@@ -169,7 +166,10 @@ merge_recovery <- function() {
 
   # get recovery data from MKE (NWQL) and GLRI (Batelle)
   mke_recovery <- read.csv('5_compare_data/raw/NWQL_prepSpike_recoveries.csv', 
-                           skip = 2)
+                           skip = 2, stringsAsFactors = F)
+  head(mke_recovery)
+  
+  # get glri recover data
   file.loc <- "M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data"
   sample.files <- list.files("M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data")
   sample.files <- grep("S17", sample.files, value = T)
@@ -181,41 +181,97 @@ merge_recovery <- function() {
                            skip = 21, col_names = T)
     temp_dat_filt <- temp_dat[,c(1, grep('recovery', names(temp_dat), ignore.case = T), grep('qualifier', names(temp_dat), ignore.case = T))]
     temp_dat_filt <- temp_dat_filt[grep("^Naphthalene$", temp_dat_filt[[1]]):grep("perylene", temp_dat_filt[[1]]),]
-    if (i != sample.files[3]) {
-      # get rid of estimates in samples where the matrix spike was 
-      # < 5x greater than the sample conc
-      temp_dat_filt$`% Recovery` <- ifelse(temp_dat_filt$Qualifier %in% "n", NA, temp_dat_filt$`% Recovery`)
-    }
+    # get rid of estimates in samples where the matrix spike was 
+    # < 5x greater than the sample conc
+    temp_dat_filt$`% Recovery` <- ifelse(temp_dat_filt$Qualifier %in% "n", NA, temp_dat_filt$`% Recovery`)
+    
     all_dat <- bind_cols(temp_dat_filt, all_dat)
+    
   }
+  # now find median, min, max
+  all_dat <- all_dat[,c(1,2,5,8,11)]
+  all_dat$min <- apply(all_dat[,2:5], 1, FUN = min, na.rm = T)
+  all_dat$min[all_dat$min == Inf] <- NA
+  all_dat$mean <- apply(all_dat[,2:5], 1, FUN = mean, na.rm = T)
+  all_dat$mean[is.nan(all_dat$mean)] <- NA
+  all_dat$max <- apply(all_dat[,2:5], 1, FUN = max, na.rm = T)
+  all_dat$max[all_dat$max == -Inf] <- NA
+  all_dat$type <- "spikes"
+  all_dat$source <- "Battelle"
   
-  glri_spikes <- for()
+  glri_spikes <- all_dat %>%
+    select(Units, min, mean, max, type, source) %>%
+    rename(compound = Units) %>%
+    mutate(compound_simple = tolower(gsub("[[:punct:]]", "", compound))) %>%
+    filter(!is.na(mean))
+  
+  mke_spikes <- select(mke_recovery, Parameter, Minimum, Mean, Maximum) %>%
+    rename(compound = Parameter, min = Minimum, mean = Mean, max = Maximum) %>%
+    mutate(compound_simple = tolower(gsub("[[:punct:]]", "", compound))) %>%
+    filter(compound_simple %in% glri_spikes$compound_simple)
+  
+  mke_spikes$type <- 'spikes'
+  mke_spikes$source <- 'NWQL'
+
+
+  spikes <- bind_rows(mke_spikes, glri_spikes) %>%
+    filter(!is.na(mean)) %>%
+    filter(compound_simple != 'biphenyl')
+  
+  compound.order <- filter(spikes, source == "Battelle") %>%
+    arrange(mean) %>%
+    select(compound_simple)
+  spikes$compound_simple <- factor(spikes$compound_simple, levels = compound.order[[1]])
+  
+  
+  # plot data
+  p <- ggplot(spikes, aes(x =compound_simple, y = mean, group = source)) +
+    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
+    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(y = "% Recovery from Spikes", x = "", 
+         title = "Comparison of matrix spike recoveries from NWQL and Battelle",
+         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
+Maximum n value for any compound Battelle = 4, NWQL = 26.")
+
+  ggsave('spike_comparison.png', p)
+  
+  #########################################################
   # this glri data is actually surrogates - find mke surrogates
-  glri_recovery <- samples %>%
+  glri_sur_m <- samples %>%
     filter(UNIT == "PCT_REC") %>%
     select(PARAM_SYNONYM, RESULT) %>%
     group_by(PARAM_SYNONYM) %>%
     summarize_at(vars(RESULT), funs(min, median, max), na.rm = T)
   
-  glri_recovery_q <- samples %>%
+  glri_sur_q <- samples %>%
     filter(UNIT == "PCT_REC") %>%
     select(PARAM_SYNONYM, RESULT) %>%
     group_by(PARAM_SYNONYM) %>%
     summarize(first = quantile(RESULT, probs = 0.25),
               third = quantile(RESULT, probs = 0.75))
   
-  glri_rec <- left_join(glri_recovery, glri_recovery_q) %>%
-    select(min, first, median, third, max) %>%
+  glri_sur <- left_join(glri_sur_m, glri_sur_q) 
+  glri_sur_names <- glri_sur$PARAM_SYNONYM
+  
+  glri_sur <- select(glri_sur, min, first, median, third, max) %>%
     t()
+  
   compounds <- gsub("-[[:alnum:]]+", "", glri_recovery$PARAM_SYNONYM)
   compounds <- gsub("\\(", "\\[", compounds)
   compounds <- gsub("\\)", "\\]", compounds)
 
-  mke_recovery <- mke_recovery[mke_recovery$Parameter %in% compounds,]
+  mke_sur <- processed_mke %>% 
+    rename(parameter_cd = parm_cd) %>%
+    left_join(parameterCdFile)
+  row.keep <- grep("recovery", mke_sur$parameter_nm)
+  mke_sur <- mke_sur[row.keep, ] 
   
-  mke_rec <- select(mke_recovery, Minimum, First.Quartile, Median, Third.Quartile, Maximum) %>%
-    t() %>%
-    as.matrix()
+  mke_sur_m <- group_by(mke_sur, parameter_cd) %>%
+    summarize_at(vars(result_va), funs(min, median, max), na.rm = T)
+  
+    
   
   recovery <- matrix(ncol = 8, nrow = 5)
   recovery[,1:8] <- c(mke_rec[,1], glri_rec[,1],
