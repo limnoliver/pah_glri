@@ -291,15 +291,18 @@ Maximum n value for any compound Battelle = 4, NWQL = 26.")
                                    rep("chem7", 3)))
   test.p <- boxplot(test$Percent.Recovery ~ test$Chemicals, col = 'red')
   test.p$stats <- surrogates
-  test.p$names <- c(glri_sur_names, mke_sur_names)
+  test.p$names <- c(glri_sur_names, mke_names)
   
-  png("Method_pctrecovery_comparison.png", height = 500, width = 1000)
-  par(mar=c(5,5,2,2))
-  bxp(z = test.p, border = c("black", "red"), outcol = "black", 
-      ylab = "Percent Recovery", ylim = c(40, 145), xaxt = 'n', cex.axis = 2, cex.lab = 2)
-  legend('topleft', legend = c("NWQL", "Batelle"), border = c('black', 'red'), 
+  png("surrogate_comparison.png", height = 500, width = 1000)
+  par(mar=c(10,5,6,2))
+  bxp(z = test.p, border = c(rep("black", 4), rep("red", 3)), outcol = "black", 
+      ylab = "Percent Recovery", ylim = c(0, 120), cex.axis = 2, cex.lab = 2, xaxt = 'n')
+  legend('topleft', legend = c("Batelle", "NWQL"), border = c('black', 'red'), 
          cex = 2, fill = "white")
-  text(x = c(1.5, 3.5, 5.5, 7.5), y = 25, labels = compounds, xpd = T, cex = 2)
+  title(main = "Comparison of surrogate recoveries from NWQL and Battelle", line = 2, adj = 0)
+  title(sub = "Values represent the minimum, 1st quartile, median, 3rd quartile, and maximum reported recoveries.", 
+        line = -20.5, adj =0)
+  axis(1, tick = T, labels = F)
+  text(x = c(1:7), y = -10, labels = test.p$names, xpd = T, cex = 1.5, srt = 45, adj = 1)
   dev.off()
-  # create a boxplot out of the following values: min, 1st quartile, median, 2nd quartile, max
 }
