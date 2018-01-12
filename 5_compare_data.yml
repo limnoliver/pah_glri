@@ -13,15 +13,21 @@ targets:
   5_compare_data:
     depends:
       - all_studies
+      - MKE_GLRI_recovery
+      - spike_comparison
+      - surrogate_comparison
   
   all_studies:
     command: merge_studies()
     
-  MKE_GLRI_recovery: merge_recovery()
+  MKE_GLRI_recovery: 
+    command: merge_recovery()
   
-  5_compare_data/doc/spike_comparison.pdf: plot_spikes(MKE_GLRI_recovery, target_name)
+  5_compare_data/doc/spike_comparison.pdf: 
+    command: plot_spikes(MKE_GLRI_recovery, target_name)
   
-  5_compare_data/doc/surrogate_comparison.pdf: plot_surrogates(MKE_GLRI_recovery, target_name)
+  5_compare_data/doc/surrogate_comparison.pdf: 
+    command: plot_surrogates(MKE_GLRI_recovery, target_name)
 
   
   
