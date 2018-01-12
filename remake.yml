@@ -4,9 +4,9 @@ packages:
   - remake
 
 include:
-  - 3_filter_data.yml
+  - 4_summarize_data.yml
 
 targets:
   all:
     depends: 
-      - samples
+      - 4_summarize_data/doc/conc_by_watershed.png
