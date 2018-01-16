@@ -1,0 +1,20 @@
+target_default: 6_profile_data
+
+packages:
+  - dplyr
+  - pah
+  - ggplot2
+  
+include:
+  - 3_filter_data.yml
+  
+sources:
+  - 5_profile_data/src/profile_data.R
+  
+targets:
+  5_profile_data:
+    depends:
+      - profile_diff
+      
+  profile_diff:
+    command: 
