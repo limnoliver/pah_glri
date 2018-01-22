@@ -4,6 +4,7 @@ library(rlang)
 library(tidyr)
 
 samples$sample_id <- paste0(samples$State, "-", samples$STAT_ID)
+raw_samples$sample_id <- paste0(raw_samples$State, "-", raw_samples$STAT_ID)
 
 # remove all samples where there is a zero - meaning BDL
 
@@ -12,6 +13,27 @@ samples.remove <- unique(samples$sample_id[samples$RESULT == 0])
 samples <- filter(samples, !(sample_id %in% samples.remove))
 samples <- select(samples, sample_id, RESULT, casrn, Lake, State, Watershed)
 
+# pull out pah 16 compounds and order samples by total
+
+samples_16 <- filter(raw_samples,PARAM_SYNONYM == 'Priority Pollutant PAH') %>%
+  arrange(RESULT)
+samples_16$sample_id <- paste0(samples_16$State, "-", samples_16$STAT_ID)
+samples_16 <- select(samples_16, sample_id, RESULT) %>%
+  group_by(sample_id) %>%
+  summarize(Priority16 = mean(RESULT)) %>%
+  mutate(Priority16_bin = ntile(Priority16, 4))
+
+# summarize by bin
+summary_16 <- group_by(samples_16, Priority16_bin) %>%
+  summarize(round(max(Priority16), 0))
+
+samples_16$Priority16_bin[samples_16$Priority16_bin == 1] <- "Low (< 443 ppb)"
+samples_16$Priority16_bin[samples_16$Priority16_bin == 2] <- "Med (443-2489 ppb)"
+samples_16$Priority16_bin[samples_16$Priority16_bin == 3] <- "Med (2489-13426 ppb)"
+samples_16$Priority16_bin[samples_16$Priority16_bin == 4] <- "High (>13426 ppb)"
+
+samples_16$Priority16_bin <- factor(samples_16$Priority16_bin, levels = c("Low (< 443 ppb)","Med (443-2489 ppb)",
+                                                                          "Med (2489-13426 ppb)","High (>13426 ppb)"))
 pah_profiler <- function(pah_dat, compound_column = 'casrn', sample_column = 'sample_id', 
                          conc_column = 'RESULT', sources = source_profiles) {
   # make column names dplyr-ready
@@ -65,6 +87,16 @@ pah_profiler <- function(pah_dat, compound_column = 'casrn', sample_column = 'sa
   
   ggsave('6_profile_data/doc/chi2_allsites_nocreosote.png', p)
   
+  all.no.creosote <- left_join(all.no.creosote, samples_16)
+
+  p <- p +
+    facet_grid(~Priority16_bin)
+  
+  ggsave('6_profile_data/doc/chi2_allsites_binnedbypriority16.png', p)
+  
+  ## calculate what is source with the smallest distance by each site
+  which.source <- group_by(all.no.creosote, sample_id) %>%
+    summarize(min_source = source[which.min(sum_chi2)])
   
   compound.drop <- unique(all.profs$casrn[is.na(all.profs$source_prop_conc)])
   creosote.summary <- filter(all.profs, casrn != compound.drop) %>%
