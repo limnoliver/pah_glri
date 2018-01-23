@@ -2,11 +2,11 @@ target_default: all
 
 packages:
   - remake
-
+  
 include:
-  - 4_summarize_data.yml
+  - 6_profile_data.yml
 
 targets:
   all:
     depends: 
-      - 4_summarize_data/doc/conc_by_watershed.png
+      - prepped_for_profiles
