@@ -41,3 +41,43 @@ prep_totals <- function(pah_dat) {
   return(samples_16)
 }
 
+profile_plotter <- function(filename, filter = NA, profile_dat, plot_type, sources_plot, samples, sample_column, include_creosote) {
+  if (!is.na(filter)) {
+    sites.keep <- prepped_totals$sample_id[grep(filter, prepped_totals$Priority16_bin)]
+    profile_dat[[1]] <- filter(profile_dat[[1]], sample_id %in% sites.keep)
+  }
+  p <- plot_profiles(profile_dat, plot_type, sources_plot, samples, sample_column, include_creosote)
+  ggsave(filename, p, height = 7, width = 10)
+}
+
+plot_conc_chi2 <- function(filename) {
+  temp <- profiles[[2]]
+  temp <- filter(temp, !(source %in% c("Creosote_product", 'Creosote_railway_ties')))
+  temp <- left_join(temp, prepped_totals)
+  order <- group_by(temp, source) %>%
+    summarize(mean_diff = mean(sum_chi2)) %>%
+    arrange(mean_diff)
+  
+  temp$source <- factor(temp$source, levels = order$source)
+  p <- ggplot(temp, aes(x = Priority16, y = sum_chi2)) +
+    geom_point() +
+    facet_wrap(~source, nrow = 4, scales = 'free_y') +
+    scale_x_continuous(trans = 'log10') +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank(), panel.grid.minor.x = element_blank()) +
+    labs(y = 'Sum Chi2', x = 'PAH16 Concentration (ppb)')
+  
+  ggsave(filename, p, height = 7, width = 11)
+}
+
+# can't get the added facet to work - maybe not use function?
+facet_by_conc <- function(filename) {
+  temp_dat <- profiles
+  temp_dat[[1]] <- left_join(temp_dat[[1]], prepped_totals, by = 'sample_id') %>%
+    ungroup()
+  p <- plot_profiles(temp_dat, plot_type = 'boxplot', sources_plot = NA, sample_column = 'sample_id',
+                     include_creosote = F) +
+    facet_wrap(.~temp_dat)
+  ggsave(filename, p, height = 5, width = 12)
+}
+

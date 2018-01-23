@@ -18,6 +18,11 @@ targets:
       - prepped_for_profiles
       - prepped_totals
       - profiles
+      - 6_profile_data/doc/chi2_allsites_nocreasote_test.png
+      - 6_profile_data/doc/profiles_highsites_selectsources.png
+      - 6_profile_data/doc/conc_vs_sumchi2.png
+      - 6_profile_data/doc/profiles_all_selectsources.png
+      - 6_profile_data/doc/chi2_allsites_binnedbypriority16.png
       
   prepped_for_profiles:
     command: prep_profiles(pah_dat = samples)
@@ -30,7 +35,23 @@ targets:
                     conc_column = I('RESULT'))
   
   6_profile_data/doc/chi2_allsites_nocreasote.png:
-    command: pah::plot_profiles(profile_dat = profiles, plot_type = 'boxplot',
-                  include_creosote = F)
+    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), 
+                    sources = I(NA), samples = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
                     
-  
+  6_profile_data/doc/profiles_highsites_selectsources.png:
+    command: profile_plotter(filename = target_name, filter = I("High"), profile_dat = profiles, plot_type = I("profile"), 
+                    sources_plot = I(c('CT_dust_7', 'Vehicle_traffic_avg', 'Tire_particles', 
+                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples = I("all"), 
+                    sample_column = I("sample_id"), include_creosote = FALSE)
+                    
+  6_profile_data/doc/conc_vs_sumchi2.png:
+    command: plot_conc_chi2(filename = target_name)
+    
+  6_profile_data/doc/profiles_all_selectsources.png:
+    command: profile_plotter(filename = target_name, filter = I(NA), profile_dat = profiles, plot_type = I("profile"), 
+                    sources_plot = I(c('CT_dust_7', 'Vehicle_traffic_avg', 'Tire_particles', 
+                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples = I("all"), 
+                    sample_column = I("sample_id"), include_creosote = FALSE)
+                    
+  6_profile_data/doc/chi2_allsites_binnedbypriority16.png:
+    command: facet_by_conc(target_name)
