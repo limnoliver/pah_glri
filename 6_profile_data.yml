@@ -15,17 +15,22 @@ sources:
 targets:
   6_profile_data:
     depends:
-      - prepped_profiles
-      - prepped_pah16
+      - prepped_for_profiles
+      - prepped_totals
+      - profiles
       
   prepped_for_profiles:
     command: prep_profiles(pah_dat = samples)
     
   prepped_totals:
-    command: prep_totals(pah-dat = samples)
+    command: prep_totals(pah_dat = samples)
     
   profiles: 
-    command: pah::pah_profiler(pah_dat = prepped_for_profiles, compound_column = 'casrn', sample_column = 'sample_id',
-                    conc_column = 'RESULT', sources = source_profiles)
+    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I('casrn'), sample_column = I('sample_id'),
+                    conc_column = I('RESULT'))
+  
+  6_profile_data/doc/chi2_allsites_nocreasote.png:
+    command: pah::plot_profiles(profile_dat = profiles, plot_type = 'boxplot',
+                  include_creosote = F)
                     
   
