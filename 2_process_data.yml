@@ -25,6 +25,3 @@ targets:
                                detect.limit.column = I("DETECT_LIMIT"))
   processed_mke:
     command: process_mke()
-                               
-#  comparison_samples:
-#    command: merge_studies()

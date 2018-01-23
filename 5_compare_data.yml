@@ -28,9 +28,3 @@ targets:
   
   5_compare_data/doc/surrogate_comparison.pdf: 
     command: plot_surrogates(MKE_GLRI_recovery, target_name)
-
-  
-  
-  
-    
-    
