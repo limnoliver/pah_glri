@@ -70,7 +70,7 @@ plot_conc_chi2 <- function(filename) {
   ggsave(filename, p, height = 7, width = 11)
 }
 
-# can't get the added facet to work - maybe not use function?
+# boxplot but facet by concentration
 facet_by_conc <- function(filename) {
   temp_dat <- profiles
   temp_dat[[2]] <- left_join(temp_dat[[2]], prepped_totals, by = 'sample_id') %>%
