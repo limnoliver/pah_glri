@@ -73,11 +73,14 @@ plot_conc_chi2 <- function(filename) {
 # can't get the added facet to work - maybe not use function?
 facet_by_conc <- function(filename) {
   temp_dat <- profiles
-  temp_dat[[1]] <- left_join(temp_dat[[1]], prepped_totals, by = 'sample_id') %>%
+  temp_dat[[2]] <- left_join(temp_dat[[2]], prepped_totals, by = 'sample_id') %>%
     ungroup()
+  
+  
   p <- plot_profiles(temp_dat, plot_type = 'boxplot', sources_plot = NA, sample_column = 'sample_id',
                      include_creosote = F) +
-    facet_wrap(.~temp_dat)
+    facet_grid(~Priority16_bin)
+  
   ggsave(filename, p, height = 5, width = 12)
 }
 
