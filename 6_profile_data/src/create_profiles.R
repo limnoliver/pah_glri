@@ -41,14 +41,15 @@ prep_totals <- function(pah_dat) {
   return(samples_16)
 }
 
-profile_plotter <- function(filename, filter = NA, profile_dat, plot_type, sources_plot, samples, sample_column, include_creosote) {
+profile_plotter <- function(totals = prepped_totals, filename, filter = NA, profile_dat, plot_type, sources_plot, samples_plot, sample_column, include_creosote) {
   if (!is.na(filter)) {
-    sites.keep <- prepped_totals$sample_id[grep(filter, prepped_totals$Priority16_bin)]
+    sites.keep <- totals$sample_id[grep(filter, totals$Priority16_bin)]
     profile_dat[[1]] <- filter(profile_dat[[1]], sample_id %in% sites.keep)
   }
-  p <- plot_profiles(profile_dat, plot_type, sources_plot, samples, sample_column, include_creosote)
+  p <- plot_profiles(profile_dat, plot_type, sources_plot, samples_plot, sample_column, include_creosote)
   ggsave(filename, p, height = 7, width = 10)
 }
+
 
 plot_conc_chi2 <- function(filename) {
   temp <- profiles[[2]]
