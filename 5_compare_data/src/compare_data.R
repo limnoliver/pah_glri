@@ -1,7 +1,3 @@
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(dataRetrieval)
 merge_studies <- function() {
   #############################
   # get MKE study
@@ -161,7 +157,7 @@ merge_studies <- function() {
   ggsave("GLRI_MKE_diff_bysite.png", p)
   
 }
-library(readxl)
+
 merge_recovery <- function() {
 
   # get recovery data from MKE (NWQL) and GLRI (Batelle)
