@@ -23,6 +23,7 @@ targets:
       - 6_profile_data/doc/conc_vs_sumchi2.png
       - 6_profile_data/doc/profiles_all_selectsources.png
       - 6_profile_data/doc/chi2_allsites_binnedbypriority16.png
+      - 6_profile_data/doc/profiles_siteWIMIM_selectsources.png
       
   prepped_for_profiles:
     command: prep_profiles(pah_dat = samples)
@@ -36,12 +37,12 @@ targets:
   
   6_profile_data/doc/chi2_allsites_nocreasote.png:
     command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), 
-                    sources = I(NA), samples = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
+                    sources = I(NA), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
                     
   6_profile_data/doc/profiles_highsites_selectsources.png:
-    command: profile_plotter(filename = target_name, filter = I("High"), profile_dat = profiles, plot_type = I("profile"), 
+    command: profile_plotter(totals = prepped_totals, filename = target_name, filter = I("High"), profile_dat = profiles, plot_type = I("profile"), 
                     sources_plot = I(c('CT_dust_7', 'Vehicle_traffic_avg', 'Tire_particles', 
-                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples = I("all"), 
+                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples_plot = I("all"), 
                     sample_column = I("sample_id"), include_creosote = FALSE)
                     
   6_profile_data/doc/conc_vs_sumchi2.png:
@@ -50,7 +51,13 @@ targets:
   6_profile_data/doc/profiles_all_selectsources.png:
     command: profile_plotter(filename = target_name, filter = I(NA), profile_dat = profiles, plot_type = I("profile"), 
                     sources_plot = I(c('CT_dust_7', 'Vehicle_traffic_avg', 'Tire_particles', 
-                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples = I("all"), 
+                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples_plot = I("all"), 
+                    sample_column = I("sample_id"), include_creosote = FALSE)
+                    
+  6_profile_data/doc/profiles_siteWIMIM_selectsources.png:
+    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("profile"), 
+                    sources_plot = I(c('CT_dust_7', 'Vehicle_traffic_avg', 'Tire_particles', 
+                        'Residential_heating', 'Asphalt', 'Pine_combustion_1')), samples_plot = I("WI-MIM"), 
                     sample_column = I("sample_id"), include_creosote = FALSE)
                     
   6_profile_data/doc/chi2_allsites_binnedbypriority16.png:
