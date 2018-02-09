@@ -4,9 +4,9 @@ packages:
   - remake
   
 include:
-  - 6_profile_data.yml
+  - 7_double_ratios.yml
 
 targets:
   all:
     depends: 
-      - 6_profile_data
+      - ratio_distance
