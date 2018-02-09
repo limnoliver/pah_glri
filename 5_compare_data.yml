@@ -2,6 +2,10 @@ target_default: 5_compare_data
 
 packages:
   - dplyr
+  - tidyr
+  - ggplot2
+  - dataRetrieval
+  - readxl
   
 include:
   - 4_summarize_data.yml
