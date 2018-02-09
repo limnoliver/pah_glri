@@ -1,0 +1,29 @@
+target_default: 7_double_ratios
+
+packages:
+  - pah
+  - dplyr
+  
+include:
+  - 3_filter_data.yml
+  
+sources:
+  - 7_double_ratios/src/calc_double_ratios.R
+  
+targets:
+  7_double_ratios:
+    depends:
+      - ratios
+      - 7_double_ratios/doc/double_ratio_plots.png
+      - ratio_distance
+      
+  ratios:
+    command: make_ratios(pah_dat = samples)
+  
+  7_double_ratios/doc/double_ratio_plots.png:
+    command: ratio_plot(filename = target_name)
+    
+  ratio_distance:
+    command: calc_ratio_dist(ratio_dat = ratios)
+    
+  
