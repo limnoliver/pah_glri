@@ -1,12 +1,9 @@
 head(samples)
-samples$unique_id <- paste0(samples$State, "-", samples$STAT_ID)
 library(ggplot2)
 library(dplyr)
-df <- filter(samples, PARAM_SYNONYM %in% "Priority Pollutant PAH") %>%
-  select(unique_id, RESULT, State, Watershed, Lake, PARAM_SYNONYM) %>%
-  group_by(unique_id, State, Watershed, Lake, PARAM_SYNONYM) %>%
-  summarize(RESULT = mean(RESULT))
-head(df$RESULT)
+library(pah)
+
+
 
 ggplot(df, aes(x = reorder(unique_id, RESULT), RESULT)) +
   geom_bar(stat="identity", position="identity", colour="black", aes(fill = State)) +
