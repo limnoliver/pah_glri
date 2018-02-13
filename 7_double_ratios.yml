@@ -3,9 +3,11 @@ target_default: 7_double_ratios
 packages:
   - pah
   - dplyr
+  - ggplot2
   
 include:
   - 3_filter_data.yml
+  - 6_profile_data.yml
   
 sources:
   - 7_double_ratios/src/calc_double_ratios.R
@@ -25,5 +27,3 @@ targets:
     
   ratio_distance:
     command: calc_ratio_dist(ratio_dat = ratios)
-    
-  
