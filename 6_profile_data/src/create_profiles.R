@@ -1,9 +1,3 @@
-# calculate difference between source and sample profiles
-library(dplyr)
-library(rlang)
-library(tidyr)
-library(pah)
-
 # remove all samples where there is a zero - meaning BDL
 prep_profiles <- function(pah_dat) {
   pah_dat$sample_id <- paste0(pah_dat$State, "-", pah_dat$STAT_ID)
@@ -41,7 +35,9 @@ prep_totals <- function(pah_dat) {
   return(samples_16)
 }
 
-profile_plotter <- function(totals = prepped_totals, filename, filter = NA, profile_dat, plot_type, sources_plot, samples_plot, sample_column, include_creosote) {
+profile_plotter <- function(totals = prepped_totals, filename, filter = NA, 
+                            profile_dat, plot_type, sources_plot, samples_plot, sample_column, 
+                            include_creosote) {
   if (!is.na(filter)) {
     sites.keep <- totals$sample_id[grep(filter, totals$Priority16_bin)]
     profile_dat[[1]] <- filter(profile_dat[[1]], sample_id %in% sites.keep)
@@ -51,10 +47,10 @@ profile_plotter <- function(totals = prepped_totals, filename, filter = NA, prof
 }
 
 
-plot_conc_chi2 <- function(filename) {
-  temp <- profiles[[2]]
+plot_conc_chi2 <- function(filename, profile_dat, totals = prepped_totals) {
+  temp <- profile_dat[[2]]
   temp <- filter(temp, !(source %in% c("Creosote_product", 'Creosote_railway_ties')))
-  temp <- left_join(temp, prepped_totals)
+  temp <- left_join(temp, totals)
   order <- group_by(temp, source) %>%
     summarize(mean_diff = mean(sum_chi2)) %>%
     arrange(mean_diff)
@@ -72,9 +68,9 @@ plot_conc_chi2 <- function(filename) {
 }
 
 # boxplot but facet by concentration
-facet_by_conc <- function(filename) {
-  temp_dat <- profiles
-  temp_dat[[2]] <- left_join(temp_dat[[2]], prepped_totals, by = 'sample_id') %>%
+facet_by_conc <- function(filename, profile_dat, totals) {
+  temp_dat <- profile_dat
+  temp_dat[[2]] <- left_join(temp_dat[[2]], totals, by = 'sample_id') %>%
     ungroup()
   
   
@@ -84,4 +80,3 @@ facet_by_conc <- function(filename) {
   
   ggsave(filename, p, height = 5, width = 12)
 }
-
