@@ -8,8 +8,8 @@ packages:
   - readxl
   
 include:
-  - 4_summarize_data.yml
-  
+  - 3_filter_data.yml
+
 sources:
   - 5_compare_data/src/compare_data.R
   
@@ -18,17 +18,16 @@ targets:
     depends:
       - all_studies
       - MKE_GLRI_recovery
-      - spike_comparison
-      - surrogate_comparison
+      - 5_compare_data/doc/spike_comparison.pdf
   
   all_studies:
-    command: merge_studies()
+    command: merge_studies(sample_dat = samples, comparison_dat = processed_mke)
     
   MKE_GLRI_recovery: 
-    command: merge_recovery()
+    command: merge_recovery(sample_dat = samples, comparison_dat = processed_mke)
   
   5_compare_data/doc/spike_comparison.pdf: 
-    command: plot_spikes(MKE_GLRI_recovery, target_name)
+    command: plot_spikes(recovery_dat = MKE_GLRI_recovery, plot_location = target_name)
   
   5_compare_data/doc/surrogate_comparison.pdf: 
-    command: plot_surrogates(MKE_GLRI_recovery, target_name)
+    command: plot_surrogates(recovery_dat = MKE_GLRI_recovery, plot_location = target_name)
