@@ -1,13 +1,13 @@
-merge_studies <- function() {
+merge_studies <- function(sample_dat, comparison_dat) {
   #############################
   # get MKE study
-  mke.m <- select(processed_mke, site_no, parm_cd, MKE) %>%
+  mke.m <- select(comparison_dat, site_no, parm_cd, MKE) %>%
     rename(pcode = parm_cd)
   
   ##############################
   # get GLRI samples
   
-  glri <- samples
+  glri <- sample_dat
   glri.m <- mutate(glri, site_no = ifelse(nchar(STAID) != 15, paste0("0", STAID), STAID)) %>%
     select(site_no, pcode, RESULT, PARAM_SYNONYM) %>%
     rename(GLRI = RESULT, study_compound_name = PARAM_SYNONYM)
@@ -158,7 +158,7 @@ merge_studies <- function() {
   
 }
 
-merge_recovery <- function() {
+merge_recovery <- function(sample_dat, comparison_dat) {
 
   # get recovery data from MKE (NWQL) and GLRI (Batelle)
   mke_recovery <- read.csv('5_compare_data/raw/NWQL_prepSpike_recoveries.csv', 
@@ -224,13 +224,13 @@ merge_recovery <- function() {
   
   #########################################################
   # merge surrogates from MKE and glri
-  glri_sur_m <- samples %>%
+  glri_sur_m <- sample_dat %>%
     filter(UNIT == "PCT_REC") %>%
     select(PARAM_SYNONYM, RESULT) %>%
     group_by(PARAM_SYNONYM) %>%
     summarize_at(vars(RESULT), funs(min, median, max), na.rm = T)
   
-  glri_sur_q <- samples %>%
+  glri_sur_q <- sample_dat %>%
     filter(UNIT == "PCT_REC") %>%
     select(PARAM_SYNONYM, RESULT) %>%
     group_by(PARAM_SYNONYM) %>%
@@ -243,11 +243,11 @@ merge_recovery <- function() {
   glri_sur <- select(glri_sur, min, first, median, third, max) %>%
     t()
   
-  compounds <- gsub("-[[:alnum:]]+", "", glri_recovery$PARAM_SYNONYM)
-  compounds <- gsub("\\(", "\\[", compounds)
-  compounds <- gsub("\\)", "\\]", compounds)
+  #compounds <- gsub("-[[:alnum:]]+", "", glri_recovery$PARAM_SYNONYM)
+  #compounds <- gsub("\\(", "\\[", compounds)
+  #compounds <- gsub("\\)", "\\]", compounds)
 
-  mke <- processed_mke %>% 
+  mke <- comparison_dat %>% 
     rename(parameter_cd = parm_cd) %>%
     left_join(parameterCdFile)
   row.keep <- grep("recovery", mke$parameter_nm)
