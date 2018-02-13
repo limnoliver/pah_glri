@@ -15,10 +15,16 @@ ratio_plot <- function(filename) {
   ggsave(filename, p, height = 5, width = 16)
 }
 
-ratio_distance_plotter <- function(dist_dat = ratio_distance, plot_type, filename) {
-  sample_order <- prepped_totals %>%
-    
-  p <- plot_ratios(ratio_dist_dat = dist_dat, percent_cutoff = 5, sample_order = NA)
+ratio_distance_plotter <- function(ratio_dat, dist_dat, plot_type, filename, totals) {
+  sample_order <- totals %>%
+    arrange(Priority16)
   
-  if (plot_type == "")
+  sample_order <- sample_order$Priority16
+    
+    
+  p <- plot_ratios(ratio_dat = dist_dat, percent_cutoff = 5, sample_order)
+  
+  if (plot_type == ""){
+    
+  }
 }
