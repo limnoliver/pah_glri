@@ -14,3 +14,11 @@ ratio_plot <- function(filename) {
   p <- plot_ratios(ratios)
   ggsave(filename, p, height = 5, width = 16)
 }
+
+ratio_distance_plotter <- function(dist_dat = ratio_distance, plot_type, filename) {
+  sample_order <- prepped_totals %>%
+    
+  p <- plot_ratios(ratio_dist_dat = dist_dat, percent_cutoff = 5, sample_order = NA)
+  
+  if (plot_type == "")
+}
