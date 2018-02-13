@@ -17,4 +17,4 @@ targets:
       - 4_summarize_data/doc/conc_by_watershed.png
       
   4_summarize_data/doc/conc_by_watershed.png:
-    command: conc_by_site(samples = samples, fig_file_path = target_name)
+    command: conc_by_site(sample_dat = samples, fig_file_path = target_name)

@@ -1,5 +1,5 @@
-conc_by_site <- function(samples, fig_file_path) {
-  df <- samples
+conc_by_site <- function(sample_dat, fig_file_path) {
+  df <- sample_dat
   df$unique_id <- paste0(df$State, "-", df$STAT_ID)
   
   df <- filter(df, PARAM_SYNONYM %in% "Priority Pollutant PAH") %>%
