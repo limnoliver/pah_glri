@@ -8,5 +8,5 @@ include:
 
 targets:
   all:
-    depends: 
-      - ratio_distance
+    depends:
+      - 7_double_ratios

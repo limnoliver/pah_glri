@@ -6,9 +6,8 @@ packages:
   - ggplot2
   
 include:
-  - 3_filter_data.yml
   - 6_profile_data.yml
-  
+
 sources:
   - 7_double_ratios/src/calc_double_ratios.R
   
@@ -18,6 +17,10 @@ targets:
       - ratios
       - 7_double_ratios/doc/double_ratio_plots.png
       - ratio_distance
+      - 7_double_ratios/doc/mean_dist_by_source.png
+      - 7_double_ratios/doc/perc_toprank_by_source.png
+      - sample_order_pah16
+      - 7_double_ratios/doc/topsource_by_sample.png
       
   ratios:
     command: make_ratios(pah_dat = samples)
@@ -27,3 +30,19 @@ targets:
     
   ratio_distance:
     command: calc_ratio_dist(ratio_dat = ratios)
+    
+  7_double_ratios/doc/mean_dist_by_source.png:
+    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-mean'))
+    plot: {width: 10, height: 9, unit: 'in', res: 400}
+    
+  7_double_ratios/doc/perc_toprank_by_source.png:
+    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-top'))
+    plot: {width: 10, height: 6, unit: 'in', res: 400}
+    
+  sample_order_pah16:
+    command: order_samples(totals = prepped_totals)
+    
+  7_double_ratios/doc/topsource_by_sample.png:
+    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('sample'), sample_order = sample_order_pah16)
+    plot: {width: 6, height: 10, unit: 'in', res: 400}
+  
