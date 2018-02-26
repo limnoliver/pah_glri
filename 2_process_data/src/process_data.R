@@ -48,6 +48,13 @@ process_sample_merge <- function(raw_sample, raw_site){
   
   # get rid of samples that are "bad"
   dat.clean <- filter(dat.clean, LAB_SAMPLE_ID != "K7216") # get rid of first sample taken at SLR
+  dat.clean <- filter(dat.clean, LAB_SAMPLE_ID != "K1708433-057") # some leftover data from first sample at SLR
+  
+  dat.clean <- filter(dat.clean, !(STAT_ID == "BRO" & COLLECTION_DATE_NOTIME == as.Date("2017-06-21"))) # get rid of first sample at BRO
+  
+  # sed sample ID K7135 (IN-CCD) is a duplicate, but marked as a sample, so gets through later filter
+  # change FIELD_QC_CODE == 'DU'
+  dat.clean$FIELD_QC_CODE <- ifelse(dat.clean$SAMPLE_ID == 'K7135', 'DU', dat.clean$FIELD_QC_CODE)
   
   # get rid of columns that are unnecessary
   dat.clean <- select(dat.clean, -c(1:7, 14:21))
