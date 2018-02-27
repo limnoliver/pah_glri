@@ -4,9 +4,9 @@ packages:
   - remake
   
 include:
-  - 7_double_ratios.yml
+  - 8_pca_analysis.yml
 
 targets:
   all:
     depends:
-      - 7_double_ratios
+      - 8_pca_analysis
