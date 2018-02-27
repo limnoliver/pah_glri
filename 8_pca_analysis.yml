@@ -1,46 +1,39 @@
-target_default: 8_pca
+target_default: 8_pca_analysis
 
 packages:
   - pah
   
 include:
   - 6_profile_data.yml
-
-sources:
-  - 8_pca/calc_plot_pca.R
   
 targets:
-  7_double_ratios:
+  8_pca_analysis:
     depends:
-      - ratios
-      - 7_double_ratios/doc/double_ratio_plots.png
-      - ratio_distance
-      - 7_double_ratios/doc/mean_dist_by_source.png
-      - 7_double_ratios/doc/perc_toprank_by_source.png
-      - sample_order_pah16
-      - 7_double_ratios/doc/topsource_by_sample.png
+      - pca_creosote
+      - pca_no_creosote
+      - 8_pca_analysis/doc/pca_components_plot_creosote.png
+      - 8_pca_analysis/doc/pca_components_plot_nocreosote.png
+      - 8_pca_analysis/doc/pca_boxplot_creosote.png
+      - 8_pca_analysis/doc/pca_boxplot_nocreosote.png
       
-  ratios:
-    command: make_ratios(pah_dat = samples)
-  
-  7_double_ratios/doc/double_ratio_plots.png:
-    command: ratio_plot(filename = target_name)
+  pca_creosote:
+    command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = TRUE)
     
-  ratio_distance:
-    command: calc_ratio_dist(ratio_dat = ratios)
+  pca_no_creosote:
+    command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = FALSE)
     
-  7_double_ratios/doc/mean_dist_by_source.png:
-    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-mean'))
-    plot: {width: 10, height: 9, unit: 'in', res: 400}
+  8_pca_analysis/doc/pca_components_plot_creosote.png:
+    command: plot_pca(pca_creosote, plot_type = I('pca_components'))
+    plot: {width: 10, height: 10, unit: 'in', res: 400}
     
-  7_double_ratios/doc/perc_toprank_by_source.png:
-    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-top'))
-    plot: {width: 10, height: 6, unit: 'in', res: 400}
+  8_pca_analysis/doc/pca_components_plot_nocreosote.png:
+    command: plot_pca(pca_no_creosote, plot_type = I('pca_components'))
+    plot: {width: 10, height: 10, unit: 'in', res: 400}
     
-  sample_order_pah16:
-    command: order_samples(totals = prepped_totals)
+  8_pca_analysis/doc/pca_boxplot_creosote.png:
+    command: plot_pca(pca_creosote, plot_type = I('distance_boxplot'))
+    plot: {width: 8, height: 4, unit: 'in', res: 400}
     
-  7_double_ratios/doc/topsource_by_sample.png:
-    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('sample'), sample_order = sample_order_pah16)
-    plot: {width: 6, height: 10, unit: 'in', res: 400}
-  
+  8_pca_analysis/doc/pca_boxplot_nocreosote.png:
+    command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'))
+    plot: {width: 8, height: 4, unit: 'in', res: 400}  
