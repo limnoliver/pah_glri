@@ -62,6 +62,8 @@ process_sample_merge <- function(raw_sample, raw_site){
   # merge with compound metadata
   dat.clean2 <- get_compound_info(pah_dat = dat.clean, merge_type = 'name', merge_col = 'PARAM_SYNONYM')
   
+  # create unique id for each site that combines state and 3-letter site ID
+  dat.clean2$unique_id <- paste0(dat.clean2$State, "-", dat.clean2$STAT_ID)
   # export dat.clean
   return(dat.clean2)
   
