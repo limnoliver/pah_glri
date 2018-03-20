@@ -1,0 +1,16 @@
+target_default: 10_qa_summary
+
+packages:
+  - pah
+  
+include:
+  - 
+  
+targets:
+  10_qa_summary:
+    depends:
+      - 
+      
+  10_qa_summary/doc/.png:
+    command: plot_parent_weight()
+    plot: {width: 10, height: 10, unit: 'in', res: 400}
