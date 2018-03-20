@@ -1,0 +1,16 @@
+target_default: 9_parent_weight
+
+packages:
+  - pah
+  
+include:
+  - 
+  
+targets:
+  9_parent_weight:
+    depends:
+      - 
+      
+  9_parent_weight/doc/.png:
+    command: plot_parent_weight()
+    plot: {width: 10, height: 10, unit: 'in', res: 400}
