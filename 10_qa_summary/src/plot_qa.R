@@ -1,50 +1,73 @@
-# compare samples, duplicates, and blanks
-qa <- make('blanks') %>%
-  mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
-  filter(!is.na(Parameter)) %>%
-  select(unique_id, FIELD_QC_CODE, PARAM_SYNONYM, RESULT, molwt)
+assess_dups <- function(qa_df = duplicates) {
+  
+  qa <- qa_df %>%
+    mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
+    filter(!is.na(Parameter)) %>%
+    select(unique_id, FIELD_QC_CODE, PARAM_SYNONYM, RESULT, molwt)
+  
+  dup <- filter(qa, FIELD_QC_CODE != "FB") %>%
+    spread(key = FIELD_QC_CODE, value = RESULT) %>%
+    mutate(perc_diff = round(abs((SA-DU)/ifelse(SA>=DU, SA, DU))*100, 2),
+           one_bdl = (SA==0 & DU > 0)|(SA>0 & DU == 0))
+  
+  count_bdl_off <- dup %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(n_both_bdl = length(which(is.nan(perc_diff))),
+              n_one_bdl = length(which(one_bdl)))
+  
+  dup.stats <- filter(dup, one_bdl == FALSE) %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(mean = mean(perc_diff, na.rm = T),
+              median = median(perc_diff, na.rm = T),
+              stdev = sd(perc_diff, na.rm = T), 
+              min = min(perc_diff, na.rm = T), 
+              max = max(perc_diff, na.rm = T))
+  
+  all.pah.means <- dup.stats$mean
+  dup.stats[nrow(dup.stats) +1, 1] <- c("All PAH compounds")
+  dup.stats[nrow(dup.stats), 2:6] <- c(mean(all.pah.means), 
+                                       median(all.pah.means),
+                                       sd(all.pah.means),
+                                       min(all.pah.means),
+                                       max(all.pah.means))
+  
+  dup.stats <- left_join(dup.stats, count_bdl_off)
+  
+  dup.stats[nrow(dup.stats), 7:8] <- c(sum(dup.stats$n_both_bdl, na.rm = T), sum(dup.stats$n_one_bdl, na.rm = T))
+  
+  return(dup.stats)
+}
 
-dup <- filter(qa, FIELD_QC_CODE != "FB") %>%
-  spread(key = FIELD_QC_CODE, value = RESULT) %>%
-  mutate(perc_diff = ((SA-DU)/SA)*100)
+# assess blanks
 
-dup.totals <- group_by(dup, unique_id) %>%
-  summarize(DU_total = sum(DU), SA_total = sum(SA)) %>%
-  mutate(total_perc_diff = ((SA_total - DU_total)/SA_total)*100) %>%
-  mutate(molwt = NA, PARAM_SYNONYM = "Total PAH") %>%
-  rename(perc_diff = total_perc_diff, DU = DU_total, SA = SA_total)
-
-dup <- bind_rows(dup, dup.totals) 
-dup.means <- group_by(dup, PARAM_SYNONYM) %>%
-  summarize(means = mean(SA)) %>%
-  arrange(means)
-
-dup$PARAM_SYNONYM <- factor(dup$PARAM_SYNONYM, levels = dup.means$PARAM_SYNONYM)
-p <- ggplot(dup, aes(x = reorder(PARAM_SYNONYM, SA), y = perc_diff)) +
-  geom_point(aes(color = unique_id), alpha = 0.5) +
-  scale_color_discrete(name = "Site ID")+
-  theme_bw()+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), 
-        panel.grid.minor = element_blank()) +
-  labs(x = "Compounds, low to high concentration", y = "% diff between sample and duplicate")
-
-ggsave('10_qa_summary/doc/percdiff_by_compound.png', p)
-blanks <- filter(qa, FIELD_QC_CODE == "FB")
-
-ggplot(blanks, aes(x = reorder(PARAM_SYNONYM, molwt), y = RESULT)) +
-  geom_point(aes(color = unique_id), alpha = 0.5) +
-  theme_bw()+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), 
-        panel.grid.minor = element_blank())
-
-ggplot(qa, aes(x = reorder(PARAM_SYNONYM, molwt), y = RESULT, group = FIELD_QC_CODE)) +
-  geom_point(aes(color = unique_id, shape = FIELD_QC_CODE), alpha = 0.8) +
-  scale_y_continuous(trans = 'log10')+
-  scale_shape_manual(values = c(15, 1, 17)) +
-  theme_bw()+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1), 
-        panel.grid.minor = element_blank()) +
-  labs(x = "Compounds, low to high MW", y = "Concentration (ppb)")
-
-
-ggplot(blanks, aes())
+assess_blanks <- function(qa_df = blanks) {
+  qa <- qa_df %>%
+    mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
+    filter(!is.na(Parameter)) %>%
+    select(unique_id, FIELD_QC_CODE, PARAM_SYNONYM, RESULT, molwt)
+  
+  blank <- filter(qa, FIELD_QC_CODE != "DU") %>%
+    spread(key = FIELD_QC_CODE, value = RESULT) %>%
+    mutate(blank_perc_sample = round((FB/SA)*100, 2),
+           FB_bdl = (FB == 0 & SA > 0),
+           both_bdl = (FB == 0 & SA == 0),
+           SA_bdl = (FB > 0 & SA == 0),
+           both_adl = (FB > 0 & SA > 0))
+  
+  blank_bdl_counts <- group_by(blank, PARAM_SYNONYM) %>%
+    summarize(n_FB_bdl = length(which(FB_bdl == TRUE)),
+              n_both_bdl = length(which(both_bdl == TRUE)),
+              n_SA_bdl = length(which(SA_bdl == TRUE)),
+              n_both_adl = length(which(both_adl == TRUE)))
+  
+  blank_perc_sample <- filter(blank, both_adl == TRUE) %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(mean = mean(blank_perc_sample),
+              median = median(blank_perc_sample),
+              stdev = sd(blank_perc_sample),
+              min = min(blank_perc_sample), 
+              max = max(blank_perc_sample))
+  
+  blank_qa <- left_join(blank_bdl_counts, blank_perc_sample)
+  return(blank_qa)
+}
