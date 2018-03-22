@@ -2,15 +2,15 @@ target_default: 9_parent_weight
 
 packages:
   - pah
-  
+
 include:
-  - 
+  - 8_pca_analysis.yml
   
 targets:
   9_parent_weight:
     depends:
-      - 
+      - 9_parent_weight/doc/parent_mw_pah.png
       
-  9_parent_weight/doc/.png:
-    command: plot_parent_weight()
-    plot: {width: 10, height: 10, unit: 'in', res: 400}
+  9_parent_weight/doc/parent_mw_pah.png:
+    command: pah_mw_parent(compound_info = samples, I(sample_column = "unique_id"), I(conc_column = "RESULT"), I(statistic = "average"), I(plot = TRUE))
+    plot: {width: 6, height: 4, unit: 'in', res: 600}
