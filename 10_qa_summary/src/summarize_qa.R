@@ -38,7 +38,6 @@ assess_dups <- function(qa_df = duplicates) {
   return(dup.stats)
 }
 
-# assess blanks
 
 assess_blanks <- function(qa_df = blanks) {
   qa <- qa_df %>%
