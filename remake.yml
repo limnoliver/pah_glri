@@ -4,9 +4,9 @@ packages:
   - remake
   
 include:
-  - 8_pca_analysis.yml
+  - 10_qa_summary.yml
 
 targets:
   all:
     depends:
-      - 8_pca_analysis
+      - 10_qa_summary
