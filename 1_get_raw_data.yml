@@ -14,10 +14,10 @@ targets:
       - raw_site
   
   raw_sample:
-    command: get_samples(file = 'M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data/GLEI CEC Study Data_05Oct2017.xlsx')
+    command: get_samples(file = '1_get_raw_data/raw_data/GLEI CEC Study Data_05Oct2017.xlsx')
     
   raw_site:
-    command: get_sites(file = 'M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data/GLEI CEC Study Sites.csv')
+    command: get_sites(file = '1_get_raw_data/raw_data/GLEI CEC Study Sites.csv')
     
   raw_mke:
     command: get_mke_data()
