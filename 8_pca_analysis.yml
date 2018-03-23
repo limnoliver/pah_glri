@@ -4,13 +4,17 @@ packages:
   - pah
   
 include:
-  - 6_profile_data.yml
+  - 7_double_ratios.yml
+  
+sources:
+  - 8_pca_analysis/src/pca_top_sources.R
   
 targets:
   8_pca_analysis:
     depends:
       - pca_creosote
       - pca_no_creosote
+      - pca_top_sources_bysite
       - 8_pca_analysis/doc/pca_components_plot_creosote.png
       - 8_pca_analysis/doc/pca_components_plot_nocreosote.png
       - 8_pca_analysis/doc/pca_boxplot_creosote.png
@@ -21,6 +25,9 @@ targets:
     
   pca_no_creosote:
     command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = FALSE)
+    
+  pca_top_sources_bysite: 
+    command: get_pca_top_sources(pca_dat = pca_no_creosote)
     
   8_pca_analysis/doc/pca_components_plot_creosote.png:
     command: plot_pca(pca_creosote, plot_type = I('pca_components'))
