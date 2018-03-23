@@ -9,6 +9,8 @@ library(sf)
 library(USAboundaries)
 
 samples <- make("samples")
+pah16 <- make('prepped_totals')
+pca_top <- make('pca_top_sources_bysite')
 
 get_flowlines <- function(streamorder, mapRange){
   postURL <- "https://cida.usgs.gov/nwc/geoserver/nhdplus/ows"
@@ -138,7 +140,7 @@ bb <- st_sfc(
 bb_proj <- st_transform(bb, crs = crs_plot)
 b <- st_bbox(bb_proj)
 
-# get info about PAH concentration and likely sources
+# get info about number of chemicals by site, merge with sites
 
 sites_df <- left_join(which.source, samples_16)
 sites_df$min_source <- as.character(sites_df$min_source)
