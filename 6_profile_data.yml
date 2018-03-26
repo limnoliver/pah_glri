@@ -27,13 +27,23 @@ targets:
       
   prepped_for_profiles:
     command: prep_profiles(pah_dat = samples)
+    # narrows to compounds in the 12-compound profiles, drops samples where any of the 
+    # 12 compounds were < DL, narrows to columns of interest
     
   prepped_totals:
     command: prep_totals(pah_dat = samples)
+    # creates a dataframe of PAH16 totals for each site
+    # bins samples by low, medium, high concentrations
     
   profiles:
     command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("sample_id"), conc_column = I("RESULT"))
-  
+    # uses pah::pah_profiler to calculate proportional concentrations 
+    # for samples, merges with source proportional concentration
+    # profiles is a list, first component ("profiles") is actual profiles with proportionate concentrations
+    # repeated for every sample-compound-source combination, gives sample (prop_conc) and source (source_prop_conc)
+    # values in separate columns, along with chi2 difference between the two (chi2).
+    # The second list component (sum_chi2) is the sum of the chi2 values for every sample-source combination
+    
   6_profile_data/doc/chi2_allsites_nocreasote.png:
     command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
                     
@@ -42,12 +52,16 @@ targets:
                     
   6_profile_data/doc/conc_vs_sumchi2.png:
     command: plot_conc_chi2(filename = target_name, profile_dat = profiles, totals = prepped_totals)
+    # shows how chi2 varies by EPA16 concentration for each source
     
   6_profile_data/doc/profiles_all_selectsources.png:
     command: profile_plotter(filename = target_name, filter = I(NA), profile_dat = profiles, plot_type = I("profile"), sources_plot = I(c("CT_dust_7", "Vehicle_traffic_avg", "Tire_particles", "Residential_heating", "Asphalt", "Pine_combustion_1")), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
-                    
+    # shows profiles for select sources  
+    
   6_profile_data/doc/profiles_siteWIMIM_selectsources.png:
     command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("profile"), sources_plot = I(c("CT_dust_7", "Vehicle_traffic_avg", "Tire_particles", "Residential_heating", "Asphalt", "Pine_combustion_1")), samples_plot = I("WI-MIM"), sample_column = I("sample_id"), include_creosote = FALSE)
-                    
+     # shows profiles for select sources and a select site   
+     
   6_profile_data/doc/chi2_allsites_binnedbypriority16.png:
     command: facet_by_conc(target_name, profile_dat = profiles, totals = prepped_totals)
+    # shows sum chi2 for all sites, but now paneled by low vs med vs high EPA16 concentration

@@ -18,9 +18,14 @@ targets:
  
   blanks:
     command: filter_blanks(processed_sample)
+    # this finds all sites with blanks, and returns blanks plus any samples 
+    # or duplicates from the same site for comparison purposes
     
   duplicates:
     command: filter_duplicates(processed_sample)
+    # this finds all sites where replicate samples were taken, and returns
+    # all replicates plus samples from the same site for comparison purposes
     
   samples:
     command: filter_samples(processed_sample)
+    # excludes blanks and duplicates to just return samples 

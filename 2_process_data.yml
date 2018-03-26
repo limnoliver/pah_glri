@@ -16,12 +16,16 @@ targets:
       - processed_sample
       - processed_mke
   
-  processed_sample_merge:
+  processed_sample_merge: 
     command: process_sample_merge(raw_sample, raw_site)
+    # merges samples with site metadata, uses pah::get_compound_info to also merge
+    # with compound-specific metadata (e.g., molecular weight)
     
   processed_sample:
     command: process_nondetects(processed_sample_merge, detect.decision = I("zero"),
                                code.column = I("LAB_QUAL"), detect.code = I("U"), 
                                detect.limit.column = I("DETECT_LIMIT"))
+    # turns values BDL into zeros
+    
   processed_mke:
     command: process_mke()
