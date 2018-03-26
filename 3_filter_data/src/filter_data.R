@@ -20,7 +20,7 @@ filter_blanks <- function(processed_sample) {
 filter_duplicates <- function(processed_sample) {
   processed_sample$unique_id <- paste(processed_sample$State, processed_sample$STAT_ID, processed_sample$COLLECTION_DATE_NOTIME, sep = "_")
   
-  # find blanks and get the unique id of all blanks
+  # find duplicates and get the unique id of all duplicates
   duplicate_sample <- filter(processed_sample, processed_sample$FIELD_QC_CODE == "DU")
   duplicate_sample_ids <- unique(duplicate_sample$unique_id)
   corresponding_samples <- filter(processed_sample, unique_id %in% duplicate_sample_ids) %>%
@@ -34,5 +34,3 @@ filter_samples <- function(processed_sample) {
   samples <- filter(processed_sample, FIELD_QC_CODE == "SA")
   return(samples)
 }
-
-# filter to just pah samples - exclude total solids, TOC, etc
