@@ -54,4 +54,4 @@ targets:
     plot: {width: 8, height: 4, unit: 'in', res: 400}  
     
   8_pca_analysis/doc/map_closestsource_bysite.png:
-    command: make_map(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)
+    command: make_map(filename = target_name, sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)

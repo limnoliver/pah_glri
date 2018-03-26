@@ -1,5 +1,5 @@
 
-make_map <- function(sample_info, pca_dat, conc_dat) {
+make_map <- function(filename, sample_info, pca_dat, conc_dat) {
   
   get_flowlines <- function(streamorder, mapRange){
     postURL <- "https://cida.usgs.gov/nwc/geoserver/nhdplus/ows"
@@ -166,7 +166,7 @@ make_map <- function(sample_info, pca_dat, conc_dat) {
                                override.aes = list(alpha = 0.7, size = 4, color = rev(brewer.pal(6, 'Set1'))))) + 
     theme(legend.box = "vertical")
   
-  ggsave("8_pca_analysis/doc/map_closestsource_bysite.png", p, height = 6, width = 10)
+  ggsave(filename, p, height = 6, width = 10)
 }
 
 
