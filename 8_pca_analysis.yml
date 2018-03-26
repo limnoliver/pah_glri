@@ -2,12 +2,19 @@ target_default: 8_pca_analysis
 
 packages:
   - pah
+  - httr
+  - ggplot2
+  - dplyr
+  - remake
+  - sf
+  - USAboundaries
   
 include:
   - 7_double_ratios.yml
   
 sources:
   - 8_pca_analysis/src/pca_top_sources.R
+  - 8_pca_analysis/src/map_pca.R
   
 targets:
   8_pca_analysis:
@@ -19,6 +26,7 @@ targets:
       - 8_pca_analysis/doc/pca_components_plot_nocreosote.png
       - 8_pca_analysis/doc/pca_boxplot_creosote.png
       - 8_pca_analysis/doc/pca_boxplot_nocreosote.png
+      - 8_pca_analysis/doc/map_closestsource_bysite.png
       
   pca_creosote:
     command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = TRUE)
@@ -44,3 +52,6 @@ targets:
   8_pca_analysis/doc/pca_boxplot_nocreosote.png:
     command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'))
     plot: {width: 8, height: 4, unit: 'in', res: 400}  
+    
+  8_pca_analysis/doc/map_closestsource_bysite.png:
+    command: make_map(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)
