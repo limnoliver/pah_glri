@@ -7,7 +7,7 @@ packages:
   - ggplot2
   
 include:
-  - 3_filter_data.yml
+  - 4_summarize_data.yml
   
 sources:
   - 6_profile_data/src/create_profiles.R
