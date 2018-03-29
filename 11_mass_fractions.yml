@@ -1,0 +1,21 @@
+target_default: 11_mass_fractions
+
+packages:
+  - pah
+  
+include:
+  - 10_qa_summary
+  
+sources:
+  - 
+  
+targets:
+  11_mass_fractions:
+    depends:
+      - 
+      
+  percent_by_weight_summary:
+    - command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = 'summary')
+    
+  percent_by_weight_bysample:
+    - command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = 'by_sample')
