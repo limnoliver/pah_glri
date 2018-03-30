@@ -4,6 +4,7 @@
 
 ##################################################
 ######### get sample concentrations ##############
+
 # target "samples" is all of the concentration data
 # that has been merged with compound-specific data
 # (e.g., low vs high molecular weight). BDLs have been
@@ -18,8 +19,9 @@ samples <- make('samples') # just samples, no blanks or duplicates
 pah16 <- make('prepped_totals') # sample ID's and corresponding EPA16 concentration
 site_order <- make('sample_order_pah16') # a list of site ID's, from lowest to highest EPA16 concentration
 
-########################################
+##################################################
 ######### QA data ##################
+
 # these targets were made in 3_filter_data
 blanks <- make('blanks') # blanks with coresponding samples and duplicates
 duplicates <- make('duplicates') # duplicates with corresponding samples
@@ -48,8 +50,9 @@ qa_blanks <- make('qa_blanks')
 # n_one_bdl: number of samples where one but not both sample and duplicate were BDL
 qa_duplicates <- make('qa_duplicates')
 
-####################################
-########## profiles ################
+##################################################
+######### profiles ################
+
 # profile dat, list of 2
 # part 1: long format for profiles, where each row is a unique site-compound-source combination
 # and both sample and source proportional concentration have their own columns
@@ -57,8 +60,8 @@ qa_duplicates <- make('qa_duplicates')
 
 profiles <- make('profiles')
 
-#################################
-######## PCA anaysis ############
+##################################################
+######### PCA anaysis ############
 # summary stats of PCA are output when the pah::pah_pca
 # function is run, but can also be accessed in the output
 # pah_pca lets you change selection criteria for PCA components,
@@ -81,8 +84,8 @@ pca_dist <- pca_dat$pca_distance
 # closest source by site using PCA distance
 top_pca <- make('pca_top_sources_bysite')
 
-###################################
-########## double ratios ##########
+##################################################
+######### Double ratios ##########################
 
 # raw ratios for source and samples
 # uses pah::source_ratios and pah::calc_ratios
@@ -96,8 +99,8 @@ ratios <- make('ratios')
 # see 7_double_ratios.yml for more descriptions
 ratio_dist <- make('ratio_distance')
 
-###################################
-#### parent vs alkyl and ESBTU ####
+##################################################
+######### parent vs alkyl and ESBTU ####
 
 # the compound metadata to calculate these are already in 
 # the "samples" target and come from pah::pah_compounds
@@ -106,5 +109,11 @@ ratio_dist <- make('ratio_distance')
 # see 9_parent_weight.yml for how this function is used
 
 ####################################
-####
+######### Percent mass fractions ####
+
+# get percent mass fraction based on summary statistics of all samples
+mf_summary <- make('percent_by_weight_summary')
+
+# get percent mass fraction for all sample-source combinations
+mf_bysample <- make('percent_by_weight_bysample')
 
