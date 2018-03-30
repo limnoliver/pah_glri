@@ -4,18 +4,21 @@ packages:
   - pah
   
 include:
-  - 10_qa_summary
-  
-sources:
-  - 
+  - 10_qa_summary.yml
   
 targets:
   11_mass_fractions:
     depends:
-      - 
+      - percent_by_weight_summary
+      - percent_by_weight_bysample
+      - 11_mass_fractions/doc/percent_by_weight_bysample.png
       
   percent_by_weight_summary:
-    - command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = 'summary')
+    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = I('summary'))
     
   percent_by_weight_bysample:
-    - command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = 'by_sample')
+    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = I('by_sample'))
+    
+  11_mass_fractions/doc/percent_by_weight_bysample.png:
+    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = I('by_sample'), plot = TRUE)
+    plot: {width: 7, height: 10, unit: 'in', res: 600}
