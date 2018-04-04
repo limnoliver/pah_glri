@@ -2,8 +2,34 @@
 # and how/where to get the appropriate data and figures
 # you may need.
 
+# GENERAL REMINDERS:
+
+# 1. GET LATEST CHANGES TO pah_glri
+# before you start working, it's a good idea to pull the latest version of both the 
+# PAH package and this repository. From the Git tab > Shell, 'git pull upstream master' 
+# will pull my most recent changes to the "pah_glri" repository. 
+
+# 2. GET LATEST VERSION OF pah PACKAGE
+# For now, since you don't have R tools installed, you can just pull the PAH package 
+# and use it like you would any other package. Update it by running from the 
+# RStudio console:
+devtools::install_github('limnoliver/pah')
+
+# 3. 'COMMIT' AND 'PUSH' YOUR WORK
+# when working in pah_glri (say, adding your own scripts in 'austin_analysis'), 
+# 'commit' your changes (with a commit message describing what you did) periodically 
+# (I do this about as often as a hit the save button -- be sure to hit save, then commit)
+# 'push' changes (using the up arrow in the git tab) periodically but less frequently than 
+# committing. I usually do this if I walk away from my computer, or if I've done a major change/
+# addition. This won't make changes to my repository (limnoliver/pah_glri) but rather
+# to your own fork (akbaldwi-usgs/pah_glri).
+
+
+
 ##################################################
 ######### get sample concentrations ##############
+# raw data are retrieved (1_get_raw_data), processed (2_process_data), 
+# and filtered (3_filter_data) to get to "samples"
 
 # target "samples" is all of the concentration data
 # that has been merged with compound-specific data
@@ -53,6 +79,8 @@ qa_duplicates <- make('qa_duplicates')
 ##################################################
 ######### profiles ################
 
+# step 6_profile_data
+
 # profile dat, list of 2
 # part 1: long format for profiles, where each row is a unique site-compound-source combination
 # and both sample and source proportional concentration have their own columns
@@ -62,6 +90,9 @@ profiles <- make('profiles')
 
 ##################################################
 ######### PCA anaysis ############
+
+# step 8_pca_analysis
+
 # summary stats of PCA are output when the pah::pah_pca
 # function is run, but can also be accessed in the output
 # pah_pca lets you change selection criteria for PCA components,
@@ -87,6 +118,8 @@ top_pca <- make('pca_top_sources_bysite')
 ##################################################
 ######### Double ratios ##########################
 
+# step 7_double_ratios
+
 # raw ratios for source and samples
 # uses pah::source_ratios and pah::calc_ratios
 # Each ratio is its own column, and sources and samples are both in "sample_id"
@@ -102,6 +135,8 @@ ratio_dist <- make('ratio_distance')
 ##################################################
 ######### parent vs alkyl and ESBTU ####
 
+# step 9_parent_weight
+
 # the compound metadata to calculate these are already in 
 # the "samples" target and come from pah::pah_compounds
 # The data could be retrieved by using pah::pah_mw_parent function and 
@@ -111,9 +146,12 @@ ratio_dist <- make('ratio_distance')
 ####################################
 ######### Percent mass fractions ####
 
+# step 11_mass_fractions
 # get percent mass fraction based on summary statistics of all samples
 mf_summary <- make('percent_by_weight_summary')
 
 # get percent mass fraction for all sample-source combinations
 mf_bysample <- make('percent_by_weight_bysample')
+
+
 
