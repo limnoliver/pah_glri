@@ -1,7 +1,7 @@
 # Documentation of various steps in the PAH analysis
 # and how/where to get the appropriate data and figures
 # you may need.
-
+library(remake)
 ##################################################
 ######### GENERAL WORFLOW REMINDERS ########
 
