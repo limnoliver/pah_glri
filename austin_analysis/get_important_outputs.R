@@ -2,7 +2,8 @@
 # and how/where to get the appropriate data and figures
 # you may need.
 
-# GENERAL REMINDERS:
+##################################################
+######### GENERAL WORFLOW REMINDERS ########
 
 # 1. GET LATEST CHANGES TO pah_glri
 # before you start working, it's a good idea to pull the latest version of both the 
@@ -77,7 +78,7 @@ qa_blanks <- make('qa_blanks')
 qa_duplicates <- make('qa_duplicates')
 
 ##################################################
-######### profiles ################
+######### profiles ###############################
 
 # step 6_profile_data
 
@@ -89,7 +90,7 @@ qa_duplicates <- make('qa_duplicates')
 profiles <- make('profiles')
 
 ##################################################
-######### PCA anaysis ############
+######### PCA anaysis ############################
 
 # step 8_pca_analysis
 
@@ -133,7 +134,7 @@ ratios <- make('ratios')
 ratio_dist <- make('ratio_distance')
 
 ##################################################
-######### parent vs alkyl and ESBTU ####
+######### parent vs alkyl and ESBTU ##############
 
 # step 9_parent_weight
 
@@ -143,7 +144,7 @@ ratio_dist <- make('ratio_distance')
 # setting plot = FALSE which will output a data frame
 # see 9_parent_weight.yml for how this function is used
 
-####################################
+##################################################
 ######### Percent mass fractions ####
 
 # step 11_mass_fractions
