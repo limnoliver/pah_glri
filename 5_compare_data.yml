@@ -31,3 +31,6 @@ targets:
   
   5_compare_data/doc/surrogate_comparison.pdf: 
     command: plot_surrogates(recovery_dat = MKE_GLRI_recovery, plot_location = target_name)
+    
+  GLRI_5433:
+    command: merge_glri_5433()

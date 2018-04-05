@@ -316,3 +316,55 @@ plot_surrogates <- function(recovery_dat, plot_location) {
   text(x = c(1:7), y = -10, labels = test.p$names, xpd = T, cex = 1.5, srt = 45, adj = 1)
   dev.off()
 }
+
+merge_glri_5433 <- function(dat_glri, dat_5433) {
+  
+  # get a list of PAH pcodes from GLRI
+  glri_pcodes <- filter(dat_glri, CLASS == 'PAH') %>%
+    select(pcode) %>%
+    distinct()
+  
+  pcodes_5433 <- unique(dat_5433$parm_cd)
+  pcodes_glri <- unique(dat_glri$pcode)
+  
+  pcode_overlap <- pcodes_5433[which(pcodes_5433 %in% pcodes_glri)]
+  
+  sub_5433 <- filter(dat_5433, parm_cd %in% pcode_overlap) %>%
+    rename(STAID = site_no, pcode = parm_cd) %>%
+    mutate(conc_5433 = ifelse(remark_cd %in% '<', 0, result_va))
+  
+  # process 5433 data to turn NDs into 0s
+  
+  
+  sub_glri <- filter(dat_glri, pcode %in% pcode_overlap)
+  
+  merged <- left_join(sub_5433, sub_glri, by =c('STAID','pcode'))
+  
+  # test how many pcodes overlap - should be 6?
+  length(unique(sub_5433$parm_cd))
+  
+  p <- ggplot(merged, aes(x = RESULT, y = conc_5433)) +
+    geom_point(aes(color = PARAM_SYNONYM), alpha = 0.5) +
+    geom_abline(slope = 1, intercept = 0)  + 
+    labs(x = "Battelle (ppb)", y = "NWQL 5433 (ppb)", color = 'PAH compound') +
+    theme_bw() +
+    scale_x_continuous(breaks = c(0, 10, 100, 1000, 10000), trans = "log1p") +
+    scale_y_continuous(breaks = c(0, 10, 100, 1000, 10000), trans = "log1p") +
+    geom_text(label = "1:1 Line",aes(x = 15, y = 4), color = "black")
+  ggsave("5_compare_data/doc/GLRI_NWQL_Batelle_comparison_scatter.png", p, height = 4, width = 7)
+  
+  # break plot out by compound
+  df <- rename(merged, batelle = RESULT, nwql = conc_5433) %>%
+    select(unique_id, batelle, nwql, PARAM_SYNONYM)
+  df.long <- gather(df, study, value, -unique_id, -PARAM_SYNONYM)
+  
+  p <- ggplot(df.long, aes(x = reorder(unique_id, value), y = value)) +
+    geom_point(aes(color = study), alpha = 0.8) +
+    facet_wrap(~PARAM_SYNONYM, ncol = 1) +
+    scale_y_continuous(trans = "log1p", breaks = c(0, 10, 100, 1000, 10000)) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+    labs(y = "Concentration (ppb)", x = "", color = 'Lab')
+  ggsave("5_compare_data/doc/GLRI_MKE_comparison_bysite.png", p, height = 8, width = 12)
+  
+    
+}
