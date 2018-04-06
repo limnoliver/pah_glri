@@ -19,6 +19,8 @@ targets:
       - all_studies
       - MKE_GLRI_recovery
       - 5_compare_data/doc/spike_comparison.pdf
+      - glri_battelle_nwql
+      - glri_batelle_nwql_comparison
   
   all_studies:
     command: merge_studies(sample_dat = samples, comparison_dat = processed_mke)
@@ -32,5 +34,11 @@ targets:
   5_compare_data/doc/surrogate_comparison.pdf: 
     command: plot_surrogates(recovery_dat = MKE_GLRI_recovery, plot_location = target_name)
     
-  GLRI_5433:
-    command: merge_glri_5433()
+  glri_battelle_nwql:
+    command: merge_glri_5433(dat_glri = samples, dat_5433 = raw_glri6)
+    # this merges the 69 sites with 6 PAH compounds in common between the battelle and 
+    # NWQL lab data for the GLRI study
+    
+  glri_batelle_nwql_comparison:
+    command: compare_nwql_battelle(merged_dat = glri_batelle_nwql)
+    # This makes several comparison plots and stores them in 'doc'
