@@ -340,9 +340,13 @@ merge_glri_5433 <- function(dat_glri, dat_5433) {
   
   merged <- left_join(sub_5433, sub_glri, by =c('STAID','pcode'))
   
+  return(merged)
   # test how many pcodes overlap - should be 6?
-  length(unique(sub_5433$parm_cd))
-  
+
+   
+}
+
+compare_nwql_battelle <- function(merged_dat) {
   p <- ggplot(merged, aes(x = RESULT, y = conc_5433)) +
     geom_point(aes(color = PARAM_SYNONYM), alpha = 0.5) +
     geom_abline(slope = 1, intercept = 0)  + 
@@ -364,7 +368,28 @@ merge_glri_5433 <- function(dat_glri, dat_5433) {
     scale_y_continuous(trans = "log1p", breaks = c(0, 10, 100, 1000, 10000)) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
     labs(y = "Concentration (ppb)", x = "", color = 'Lab')
-  ggsave("5_compare_data/doc/GLRI_MKE_comparison_bysite.png", p, height = 8, width = 12)
+  ggsave("5_compare_data/doc/GLRI_batelle_nwql_comparison_bycompound.png", p, height = 8, width = 12)
   
-    
+  ##
+  head(df)
+  df.diff <- filter(df, batelle > 0 & nwql > 0) %>%
+    mutate(perc_diff = round((batelle - nwql)/ifelse(batelle>=nwql, batelle, nwql)*100, 2))
+  
+  p <- ggplot(df.diff, aes(x = PARAM_SYNONYM, y = perc_diff)) +
+    geom_boxplot() +
+    geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
+    coord_cartesian(ylim = c(-130, 130)) +
+    geom_text(label = "Battelle > NWQL", data = data.frame(PARAM_SYNONYM = 1.5, 
+                                                           perc_diff = 120),
+              color = "red") +
+    geom_text(label = "Battelle < NWQL", data = data.frame(PARAM_SYNONYM = 1.5, 
+                                                           perc_diff = -120),
+              color = "red") +
+    labs(y = "Percent Difference Between Labs", x = "") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+          panel.grid.minor.y = element_blank())
+  
+  ggsave("5_compare_data/doc/GLRI_battelle_nwql_diff_bycompound.png", p, height = 4, width = 6)
+  
 }
