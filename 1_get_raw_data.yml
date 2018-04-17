@@ -12,15 +12,16 @@ targets:
     depends:
       - raw_sample
       - raw_site
+      - raw_glri6
   
-  raw_sample:
+  raw_sample: # read in raw sample concentration data from Batelle
     command: get_samples(file = '1_get_raw_data/raw_data/GLEI CEC Study Data_05Oct2017.xlsx')
     
-  raw_site:
+  raw_site: # read in site metadata for all sites in GLRI study
     command: get_sites(file = '1_get_raw_data/raw_data/GLEI CEC Study Sites.csv')
     
-  raw_mke:
+  raw_mke: # get MKE study data using dataRetrieval, uses pah::get_pah
     command: get_mke_data()
     
   raw_glri6:
-    command: get_glri6_data()
+    command: get_glri6_data(all_sites = raw_site)

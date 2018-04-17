@@ -37,13 +37,36 @@ tox_thresholes <- function(sample_dat) {
            pec_ratio = RESULT/pec) %>%
     select(unique_id, RESULT, tec_ratio, pec_ratio)
   
-  pec_tec_summary <- data.frame(unique_id = c("all sites - TEC", 'all sites - PEC'), 
-                                mean_priority16_conc = rep(mean(pec_tec$RESULT), 2),
-                                mean_ratio = c(mean(pec_tec$tec_ratio), mean(pec_tec$pec_ratio)),
-                                median_ratio = c(median(pec_tec$tec_ratio), median(pec_tec$pec_ratio)),
-                                sd_ratio = c(sd(pec_tec$tec_ratio), sd(pec_tec$pec_ratio)), 
-                                min_ratio = c(min(pec_tec$tec_ratio), min(pec_tec$pec_ratio)),
-                                max_ratio = c(max(pec_tec$tec_ratio), max(pec_tec$pec_ratio)))
+  toc_dat <- sample_dat %>%
+    filter(PARAM_SYNONYM == "TOC") %>%
+    mutate(f_TOC = RESULT/100) %>%
+    select(unique_id, f_TOC)
+  
   esbtu_dat <- sample_dat %>%
-    filter(!is.na(coc_pah_max))
+    filter(!is.na(coc_pah_fcv)) %>%
+    left_join(toc_dat, by = 'unique_id') %>%
+    mutate(conc_ug_g = round(RESULT/f_TOC, 0)/1000) %>%
+    mutate(esbtu = conc_ug_g/coc_pah_fcv) %>%
+    group_by(unique_id) %>%
+    summarize(n_esbtu = n(), 
+              sum_esbtu = sum(esbtu, na.rm = T))
+  
+  site_results <- left_join(pec_tec, esbtu_dat, by = 'unique_id') %>%
+    rename(epa_priority16 = RESULT)
+  
+  site_results_summary <- data.frame(unique_id = c("TEC", 'PEC', 'ESBTU'), 
+                                mean_EPApriority16_conc = rep(mean(site_results$epa_priority16), 3),
+                                n_sites = rep(nrow(site_results), 3),
+                                mean_ratio = c(mean(site_results$tec_ratio), mean(site_results$pec_ratio), mean(site_results$sum_esbtu)),
+                                median_ratio = c(median(site_results$tec_ratio), median(site_results$pec_ratio), median(site_results$sum_esbtu)),
+                                sd_ratio = c(sd(site_results$tec_ratio), sd(site_results$pec_ratio), sd(site_results$sum_esbtu)), 
+                                min_ratio = c(min(site_results$tec_ratio), min(site_results$pec_ratio), min(site_results$sum_esbtu)),
+                                max_ratio = c(max(site_results$tec_ratio), max(site_results$pec_ratio), max(site_results$sum_esbtu)))
+  
+  out <- list(site_results, site_results_summary)
+  names(out) <- c('results_bysample', 'results_summary')
+  return(out)
+  
+  
+    
 }

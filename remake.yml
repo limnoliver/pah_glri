@@ -4,9 +4,9 @@ packages:
   - remake
   
 include:
-  - 10_qa_summary.yml
+  - 11_mass_fractions.yml
 
 targets:
   all:
     depends:
-      - 10_qa_summary
+      - 11_mass_fractions

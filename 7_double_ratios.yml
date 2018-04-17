@@ -24,23 +24,44 @@ targets:
       
   ratios:
     command: make_ratios(pah_dat = samples)
+    # makes ratios of interest from sample data, and merges with source ratios
+    # via pah::source_ratios and pah::calc_ratios
+    # Each ratio is its own column, and sources and samples are both in "sample_id"
+    # column but are distinguished by the "sample_type" column.
   
   7_double_ratios/doc/double_ratio_plots.png:
     command: ratio_plot(filename = target_name)
     
   ratio_distance:
     command: calc_ratio_dist(ratio_dat = ratios)
+    # calculates the euclidean distance between sources and samples
+    # for each double ratio plot of interest
+    # out pust is list of 3:
+    # 'raw' is raw distances between each sample and source combo
+    # 'source' summarizes the distances by source (mean distances by source) along
+    # with mean ranks. Because not every source has each ratio available, this table also 
+    # reports n_poss which is the number of times that source was compared to samples across
+    # the three double ratio plots (this is a multiple of the number of samples). "perc_top" is the
+    # number of times the source was top ranked for any sample-source comparison across the three
+    # double ratio plots, divided by the number of comparisons. 
+    # 'sample' shows top source by sample for each double ratio plot of interest
     
   7_double_ratios/doc/mean_dist_by_source.png:
     command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-mean'))
     plot: {width: 10, height: 9, unit: 'in', res: 400}
+    # 3 panels for each double ratio comparison, with colors representing mean rank by source a
+    # across all samples, and distance on y axis. 
     
   7_double_ratios/doc/perc_toprank_by_source.png:
     command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-top'))
     plot: {width: 10, height: 6, unit: 'in', res: 400}
+    # shows how many times each source was ranked as a the closest source to a sample
+    # color of bars represent the number of comparisons that were made for each source (because
+    # each source did not have all ratio info)
     
   sample_order_pah16:
     command: order_samples(totals = prepped_totals)
+    # prints site IDs in order of sumEPA16 concentrations (low to high)
     
   7_double_ratios/doc/topsource_by_sample.png:
     command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('sample'), sample_order = sample_order_pah16)

@@ -8,6 +8,7 @@ get_samples <- function(file) {
 
 get_sites <- function(file) {
   dat <- read.csv(file, stringsAsFactors = F, colClasses = c(STAID = "character"))
+  dat$STAID <- ifelse(nchar(dat$STAID) < 15, paste0('0', dat$STAID), dat$STAID)
   return(dat)
 }
 
@@ -44,7 +45,7 @@ get_mke_data <- function() {
   return(mke_pah)
 }
 
-get_glri6_data <- function() {
+get_glri6_data <- function(all_sites, all_samples) {
   # find pcodes for OWC schedule #5433
   url <- "http://nwqlqc/servlets_u/AnalyticalServicesGuide?srchStr=5433&srchType=sched&mCrit=exact&oFmt=xl"
   destfile <- "AnalyticalServicesGuide_srchStr_5433_srchType_sched_mCrit_exact_oFmt_xl.xls"
@@ -52,10 +53,11 @@ get_glri6_data <- function() {
   schedule_5433 <- read_excel(destfile)
   # filter pcodes to include only those in Austin's list of pcodes (I am assuming)
   # this is complete - maybe verify this
+
   pcodes.keep <- filter(schedule_5433, `Parameter Code` %in% pah_pcodes) %>%
     select(`Parameter Code`, `Parameter Name`)
-  sites <- raw_site[['STAID']]
-  sites <- ifelse(nchar(sites) != 15, paste0("0", sites), sites)
+  
+  sites <- all_sites[['STAID']]
   test.site <- sites[26]
   startDate <- '2017-01-01'
   endDate <- '2017-12-31'
