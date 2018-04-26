@@ -17,22 +17,22 @@ targets:
   5_compare_data:
     depends:
       - all_studies
-      - 5507_GLRI_recovery
+      - battelle_5507_recovery
       - 5_compare_data/doc/spike_comparison.pdf
-      - glri_battelle_nwql
-      - glri_batelle_nwql_comparison
+      - glri_battelle_5433
+      - glri_batelle_5433_comparison
   
   all_studies:
     command: merge_studies(sample_dat = samples, comparison_dat = processed_5507)
     
-  5507_battelle_recovery: 
+  battelle_5507_recovery: 
     command: merge_recovery(sample_dat = samples, comparison_dat = processed_5507, sample_rec_sur = pct_rec_surrogates, mke_rec_sur = pct_rec_surrogates_5507, sample_rec_mspikes = pct_rec_mspikes, mke_rec_mspikes = pct_rec_mspikes_5507)
   
   5_compare_data/doc/spike_comparison.pdf: 
-    command: plot_spikes(recovery_dat = 5507_battelle_recovery, plot_location = target_name)
+    command: plot_spikes(recovery_dat = battelle_5507_recovery, plot_location = target_name)
   
   5_compare_data/doc/surrogate_comparison.pdf: 
-    command: plot_surrogates(recovery_dat = 5507_battelle_recovery, plot_location = target_name)
+    command: plot_surrogates(recovery_dat = battelle_5507_recovery, plot_location = target_name)
     
   glri_battelle_5433:
     command: merge_glri_5433(dat_glri = samples, dat_5433 = raw_5433)
