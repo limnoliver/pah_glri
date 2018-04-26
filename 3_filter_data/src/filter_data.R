@@ -34,3 +34,23 @@ filter_samples <- function(processed_sample) {
   samples <- filter(processed_sample, FIELD_QC_CODE == "SA")
   return(samples)
 }
+
+filter_surrogates <- function(processed_sample) {
+  glri_sur_m <- processed_sample %>%
+    filter(UNIT == "PCT_REC") %>%
+    select(PARAM_SYNONYM, RESULT)
+  return(glri_sur_m)
+}
+
+filter_surrogates_5507 <- function(processed_5507) {
+  
+  mke <- processed_5507 %>% 
+    rename(parameter_cd = parm_cd) %>%
+    left_join(parameterCdFile)
+  
+  row.keep <- grep("recovery", mke$parameter_nm)
+  mke <- mke[row.keep, ] 
+  
+  return(mke)
+  
+}
