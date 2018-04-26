@@ -8,7 +8,7 @@ packages:
   - readxl
   
 include:
-  - 3_filter_data.yml
+  - 4_summarize_data.yml
 
 sources:
   - 5_compare_data/src/compare_data.R
@@ -23,10 +23,10 @@ targets:
       - glri_batelle_nwql_comparison
   
   all_studies:
-    command: merge_studies(sample_dat = samples, comparison_dat = processed_mke)
+    command: merge_studies(sample_dat = samples, comparison_dat = processed_5507)
     
   MKE_GLRI_recovery: 
-    command: merge_recovery(sample_dat = samples, comparison_dat = processed_mke)
+    command: merge_recovery(sample_dat = samples, comparison_dat = processed_5507, sample_rec_sur = pct_rec_surrogates, mke_rec_sur = pct_rec_surrogates_5507, sample_rec_mspikes = pct_rec_mspikes, mke_rec_mspikes = pct_rec_mspikes_5507)
   
   5_compare_data/doc/spike_comparison.pdf: 
     command: plot_spikes(recovery_dat = MKE_GLRI_recovery, plot_location = target_name)
@@ -35,10 +35,10 @@ targets:
     command: plot_surrogates(recovery_dat = MKE_GLRI_recovery, plot_location = target_name)
     
   glri_battelle_nwql:
-    command: merge_glri_5433(dat_glri = samples, dat_5433 = raw_glri6)
+    command: merge_glri_5433(dat_glri = samples, dat_5433 = raw_5433)
     # this merges the 69 sites with 6 PAH compounds in common between the battelle and 
     # NWQL lab data for the GLRI study
     
   glri_batelle_nwql_comparison:
-    command: compare_nwql_battelle(merged_dat = glri_batelle_nwql)
+    command: compare_nwql_battelle(merged_dat = glri_battelle_nwql, samples_dat = samples)
     # This makes several comparison plots and stores them in 'doc'
