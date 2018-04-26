@@ -93,5 +93,10 @@ process_mke <- function(raw = raw_5507) {
   return(mke)
 }
 
+process_5433 <- function(raw = raw_5433) {
+  mod_5433 <- mutate(raw, conc_5433 = ifelse(remark_cd %in% '<', 0, result_va))
+  return(mod_5433)
+}
+
 
 
