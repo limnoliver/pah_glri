@@ -23,7 +23,7 @@ targets:
     command: write.csv(qa_duplicates, target_name, row.names = FALSE)
     
   qa_blanks:
-    command: assess_blanks(qa_df = blanks)
+    command: assess_blanks(qa_df = field_blanks)
     
   10_qa_summary/doc/qa_blanks.csv:
     command: write.csv(qa_blanks, target_name, row.names = FALSE)
