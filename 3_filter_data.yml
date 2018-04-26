@@ -40,4 +40,6 @@ targets:
   pct_rec_surrogates_5507:
     command: filter_surrogates_5507(processed_5507)
     # % recoveries from schedule 5507 that was run in MKE for Austin's study.
+    # note there are no surrogate recoveries reported in the 5433 pull from GLRI
+    
     
