@@ -208,15 +208,17 @@ merge_recovery <- function(sample_dat, comparison_dat, sample_rec_sur,
 
   glri_sur <- data.frame(glri_sur)
   names(glri_sur) <- glri_sur_m$PARAM_SYNONYM
-  # glri_sur_names <- glri_sur$PARAM_SYNONYM # this needs to go somewhere else for plotting
-  
+
   glri_sur <- select(glri_sur, min, first, median, third, max) %>%
     t()
   
   #compounds <- gsub("-[[:alnum:]]+", "", glri_recovery$PARAM_SYNONYM)
   #compounds <- gsub("\\(", "\\[", compounds)
   #compounds <- gsub("\\)", "\\]", compounds)
-
+  
+  mke_names <- unique(mke_rec_sur$parameter_nm)
+  mke_names <- gsub("(^.+)(, surrogate,.+)", "\\1", mke_names, perl = T)
+  
   mke_sur_m <- group_by(mke_rec_sur, parameter_cd) %>%
     summarize_at(vars(result_va), funs(min, median, max), na.rm = T)
   
@@ -226,16 +228,18 @@ merge_recovery <- function(sample_dat, comparison_dat, sample_rec_sur,
     
   mke_sur <- left_join(mke_sur_m, mke_sur_q) 
 
+  
   mke_sur <- select(mke_sur, min, first, median, third, max) %>%
     t()
   
-  surrogates <- matrix(ncol = 7, nrow = 5)
-  surrogates[,1:7] <- c(glri_sur, mke_sur) 
-  surrogates <- data.frame(surrogates)
-  names(surrogates) <- names(mke_sur)
+  mke_sur <- data.frame(mke_sur)
+  names(mke_sur) <- mke_names
   
-  recoveries <- list(spikes, surrogates)
-  names(recoveries) <- c('spikes', 'surrogates')
+  surrogates <- bind_cols(glri_sur, mke_sur) %>%
+    mutate(variable = row.names(glri_sur))
+  
+  recoveries <- list(mspikes, surrogates)
+  names(recoveries) <- c('mspikes', 'surrogates')
   return(recoveries)
 }
 
@@ -257,10 +261,6 @@ Maximum n value for any compound Battelle = 4, NWQL = 26.")
 }
 
 plot_surrogates <- function(recovery_dat, plot_location) {
-  
-  #mke_names <- unique(mke$parameter_nm)
-  #mke_names <- gsub("(^.+)(, surrogate,.+)", "\\1", mke_names, perl = T)
-
   
   surrogates <- recovery_dat$surrogates
   test <- data.frame(`Percent Recovery` = c(1:21), 
