@@ -399,3 +399,39 @@ compare_nwql_battelle <- function(merged_dat) {
   ggsave("5_compare_data/doc/GLRI_battelle_nwql_profiles.png", p, height = 10, width = 8)
   
 }
+
+compare_spikes <- function(battelle, mspikes_5433) {
+  params <- unique(battelle$compound)
+  
+  mspikes_5433$Parameter <- gsub('\\[', '\\(', x = mspikes_5433$Parameter)
+  mspikes_5433$Parameter <- gsub('\\]', '\\)', x = mspikes_5433$Parameter)
+  
+  params_keep <- mspikes_5433$Parameter[which(mspikes_5433$Parameter %in% params)]
+  
+  s_5433 <- filter(mspikes_5433, Parameter %in% params_keep) %>%
+    select(Parameter, Minimum, Mean, Maximum, Count) %>%
+    mutate(source = 'NWQL_5433')
+  
+  names(s_5433)[1:5] <- c('compound', 'min', 'mean', 'max', 'n')
+  
+  s_battelle <- filter(battelle, compound %in% params_keep) %>%
+    filter(!is.na(pct_recovery)) %>%
+    group_by(compound) %>%
+    summarize_at(vars(pct_recovery), funs(min, mean, max, n())) %>%
+    mutate(source = 'Battelle')
+    
+  merged <- bind_rows(s_5433, s_battelle)
+  
+  p <- ggplot(merged, aes(x =compound, y = mean, group = source)) +
+    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
+    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(y = "% Recovery from Matrix Spikes", x = "", 
+         title = "Comparison of matrix spike recoveries from NWQL 5433 and Battelle",
+         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
+Maximum n value for any compound Battelle = 3, NWQL = 38.")
+  
+  ggsave('5_compare_data/doc/GLRI_battelle_5433_spike_comparison.png', p, height = 4, width = 7)
+  
+}

@@ -20,7 +20,7 @@ targets:
       - battelle_5507_recovery
       - 5_compare_data/doc/spike_comparison.pdf
       - glri_battelle_5433
-      - glri_batelle_5433_comparison
+      - glri_battelle_5433_comparison
   
   all_studies:
     command: merge_studies(sample_dat = samples, comparison_dat = processed_5507)
@@ -39,6 +39,9 @@ targets:
     # this merges the 69 sites with 6 PAH compounds in common between the battelle and 
     # NWQL lab data for the GLRI study
     
-  glri_batelle_5433_comparison:
+  glri_battelle_5433_comparison:
     command: compare_nwql_battelle(merged_dat = glri_battelle_5433, samples_dat = samples)
     # This makes several comparison plots and stores them in 'doc'
+    
+  glri_battelle_5433_spikes_comp:
+    command: compare_spikes(battelle = pct_rec_mspikes, mspikes_5433 = pct_rec_mspikes_5433)
