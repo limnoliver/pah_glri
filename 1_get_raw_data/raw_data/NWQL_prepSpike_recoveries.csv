@@ -1,0 +1,44 @@
+Schedule 5507 Percent Recoveries From 2014-06-01 to 2015-07-01 PSPK,,,,,,,,,,,,,,,,,,,,,,,,
+Note. Confidence limits calculated below are not official control limits.,,,,,,,,,,,,,,,,,,,,,,,,
+Parameter,Analyte ID,Units,Mean,Variance,Standard Deviation,Relative Standard Deviation,Count,Minimum,Maximum,Median,First Quartile,Third Quartile,Relative Interquartile Range,F-Pseudosigma,Half percentile,Two and a half-percentile,Ninety-seven and a half-percentile,Ninety-nine and a half-percentile,Total,Upper 99% Confidence Limit,Lower 99% Confidence Limit,Upper 95% Confidence Limit,Lower 95% Confidence Limit,Basis of Limits
+"1,2,4-Trichlorobenzene",64095GCM13,pct or ug/Kg,74,399,20,27,26,47,131,69,63,82,27,14,,,,,1925,134,14,114,34,3s
+"1,2-Dimethylnaphthalene",64097GCM13,pct or ug/Kg,90,310,17.6,19,26,66,130,82,78,98,23,14,,,,,2349,143,38,126,55,3s
+"1,6-Dimethylnaphthalene",64099GCM13,pct or ug/Kg,90,337,18.4,20,26,64,131,81,78,97,23,14,,,,,2340,145,35,127,53,3s
+1-Methyl-9H-fluorene,64100GCM13,pct or ug/Kg,89,193,13.9,16,26,71,122,84,80,95,18,11,,,,,2315,131,47,117,61,3s
+1-Methylphenanthrene,64101GCM13,pct or ug/Kg,92,504,22.4,24,26,70,146,81,77,113,44,26,,,,,2404,160,25,137,48,3s
+1-Methylpyrene,64102GCM13,pct or ug/Kg,97,439,20.9,22,26,76,150,86,82,111,34,21,,,,,2519,160,34,139,55,3s
+"2,3,6-Trimethylnaphthalene",64103GCM13,pct or ug/Kg,88,280,16.7,19,26,64,130,81,77,94,20,12,,,,,2287,138,38,121,55,3s
+"2,6-Dimethylnaphthalene",63167GCM13,pct or ug/Kg,89,334,18.3,21,26,62,131,80,76,95,24,14,,,,,2307,144,34,125,52,3s
+2-Ethylnaphthalene,64104GCM13,pct or ug/Kg,89,334,18.3,21,26,62,130,81,76,96,24,14,,,,,2302,143,34,125,52,3s
+2-Methylanthracene,64105GCM13,pct or ug/Kg,87,372,19.3,22,26,57,126,83,72,100,34,21,,,,,2254,145,29,125,48,3s
+4H-Cyclopenta[def]phenanthrene,64106GCM13,pct or ug/Kg,91,531,23,25,26,69,144,80,73,111,47,27,,,,,2367,160,22,137,45,3s
+Acenaphthene,64108GCM13,pct or ug/Kg,87,266,16.3,19,26,66,122,80,75,94,23,13,,,,,2273,136,39,120,55,3s
+Acenaphthylene,64109GCM13,pct or ug/Kg,76,217,14.7,19,26,62,110,69,65,84,27,14,,,,,1980,120,32,106,47,3s
+Anthracene,63180GCM13,pct or ug/Kg,86,358,18.9,22,26,62,128,79,71,98,33,19,,,,,2227,142,29,123,48,3s
+Anthraquinone,63181GCM13,pct or ug/Kg,83,347,18.6,22,26,62,142,79,69,92,29,17,,,,,2159,139,27,120,46,3s
+Benz[a]anthracene,63610GCM13,pct or ug/Kg,96,472,21.7,23,26,74,153,88,79,108,32,21,,,,,2502,161,31,140,53,3s
+Benzo[a]pyrene,63183GCM13,pct or ug/Kg,94,319,17.9,19,26,67,131,88,81,105,27,18,,,,,2447,148,41,130,58,3s
+Benzo[b]fluoranthene,64111GCM13,pct or ug/Kg,109,418,20.5,19,26,76,154,106,92,120,25,20,,,,,2836,170,48,150,68,3s
+Benzo[e]pyrene,64112GCM13,pct or ug/Kg,110,499,22.3,20,26,76,158,106,92,121,26,20,,,,,2863,177,43,155,65,3s
+Benzo[ghi]perylene,64113GCM13,pct or ug/Kg,105,379,19.5,18,26,77,152,105,88,115,25,19,,,,,2739,164,47,144,66,3s
+Benzo[k]fluoranthene,64114GCM13,pct or ug/Kg,104,517,22.7,22,26,71,162,97,88,116,28,20,,,,,2699,172,36,149,58,3s
+Bis(2-ethylhexyl) phthalate,63187GCM13,pct or ug/Kg,102,439,20.9,21,26,62,150,97,88,113,25,18,,,,,2649,165,39,144,60,3s
+Carbazole,63194GCM13,pct or ug/Kg,88,688,26.2,30,26,58,151,77,69,105,46,26,,,,,2292,167,9,141,36,3s
+Chrysene,64115GCM13,pct or ug/Kg,95,424,20.6,22,26,65,144,92,78,106,31,21,,,,,2482,157,34,137,54,3s
+"Dibenz[a,h]anthracene",64116GCM13,pct or ug/Kg,107,364,19.1,18,26,77,145,105,92,121,27,21,,,,,2783,164,50,145,69,3s
+Dibenzothiophene,64117GCM13,pct or ug/Kg,88,194,13.9,16,26,71,126,84,79,96,20,12,,,,,2299,130,47,116,61,3s
+Diethyl phthalate,63202GCM13,pct or ug/Kg,52,431,20.8,40,26,0,99,52,43,61,35,13,,,,,1358,115,-10,94,11,3s
+Fluoranthene,63208GCM13,pct or ug/Kg,95,430,20.7,22,26,73,152,85,80,113,38,24,,,,,2478,158,33,137,54,3s
+Fluorene,64107GCM13,pct or ug/Kg,88,230,15.2,17,26,69,124,81,76,96,24,14,,,,,2283,133,42,118,57,3s
+Hexachlorobenzene,63631GCM13,pct or ug/Kg,85,230,15.2,18,26,60,121,82,75,89,16,9.9,,,,,2199,130,39,115,54,3s
+"Indeno[1,2,3-cd]pyrene",64118GCM13,pct or ug/Kg,105,344,18.5,18,26,76,140,102,89,117,28,21,,,,,2727,161,49,142,68,3s
+Naphthalene,63220GCM13,pct or ug/Kg,82,321,17.9,22,26,57,127,76,69,92,30,17,,,,,2138,136,28,118,46,3s
+Pentachloroanisole,64119GCM13,pct or ug/Kg,87,220,14.8,17,26,65,122,85,77,90,14,9.2,,,,,2266,132,43,117,57,3s
+Pentachloronitrobenzene,63650GCM13,pct or ug/Kg,56,162,12.7,23,26,31,82,56,48,61,23,9.6,,,,,1457,94,18,82,31,3s
+Perylene,64120GCM13,pct or ug/Kg,90,362,19,21,26,62,135,84,74,101,32,20,,,,,2328,147,32,128,51,3s
+Phenanthrene,63224GCM13,pct or ug/Kg,95,417,20.4,22,26,72,145,85,80,111,36,23,,,,,2459,156,33,135,54,3s
+Phenanthridine,64121GCM13,pct or ug/Kg,95,338,18.4,19,26,75,142,88,79,107,31,20,,,,,2473,150,40,132,58,3s
+Pyrene,63227GCM13,pct or ug/Kg,94,415,20.4,22,26,72,144,85,79,112,38,24,,,,,2443,155,33,135,53,3s
+,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,
