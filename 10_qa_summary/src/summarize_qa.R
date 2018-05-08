@@ -38,7 +38,6 @@ assess_dups <- function(qa_df = duplicates) {
   return(dup.stats)
 }
 
-
 assess_blanks <- function(qa_df = blanks) {
   qa <- qa_df %>%
     mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
@@ -69,4 +68,50 @@ assess_blanks <- function(qa_df = blanks) {
   
   blank_qa <- left_join(blank_bdl_counts, blank_perc_sample)
   return(blank_qa)
+}
+
+battelle_pct_rec <- function(qa_df) {
+  names(qa_df)
+  
+  qa_df <- filter(qa_df, !is.na(pct_recovery)) %>%
+    filter(compound != "Biphenyl")
+  
+  wt_order <- select(samples, PARAM_SYNONYM, molwt) %>%
+    distinct() %>%
+    filter(PARAM_SYNONYM %in% unique(qa_df$compound)) %>%
+    filter(PARAM_SYNONYM != "Biphenyl") %>%
+    arrange(molwt)
+  
+  qa_df$compound <- factor(qa_df$compound, levels = wt_order$PARAM_SYNONYM)
+  
+  ggplot(qa_df, aes(x = compound, y = pct_recovery)) +
+    geom_boxplot() +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = "PAH compounds from low to high molecular weight", y = "% Recovery", title = "Battelle lab control samples (n = 8)")
+  
+  #################
+  pct_rec_mspikes_5433$Parameter <- gsub('\\[', '\\(', x = pct_rec_mspikes_5433$Parameter)
+  pct_rec_mspikes_5433$Parameter <- gsub('\\]', '\\)', x = pct_rec_mspikes_5433$Parameter)
+  
+  params_keep <- pct_rec_mspikes_5433$Parameter[which(pct_rec_mspikes_5433$Parameter %in% unique(qa_df$compound))]
+  
+  s_5433 <- filter(pct_rec_mspikes_5433, Parameter %in% params_keep) %>%
+    mutate(source = 'NWQL_5433')
+  
+  #names(s_5433)[1:5] <- c('compound', 'min', 'mean', 'max', 'n')
+  wt_order <- select(samples, PARAM_SYNONYM, molwt) %>%
+    distinct() %>%
+    filter(PARAM_SYNONYM %in% unique(s_5433$Parameter)) %>%
+    filter(PARAM_SYNONYM != "Biphenyl") %>%
+    arrange(molwt)
+  
+  s_5433$Parameter <- factor(s_5433$Parameter, levels = wt_order$PARAM_SYNONYM)
+  
+  ggplot(s_5433, aes(x = Parameter, y = Median)) +
+    geom_boxplot(aes(lower = First.Quartile, upper = Third.Quartile, middle = Median, ymin = Minimum, ymax = Maximum), stat = 'identity') +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = "PAH compounds from low to high molecular weight", y = "% Recovery", title = "NWQL schedule 5433 reagent spikes (n = 38)")
+  
 }
