@@ -10,6 +10,10 @@ targets:
   9_parent_weight:
     depends:
       - 9_parent_weight/doc/parent_mw_pah.png
+      - parent_mw_dat
+      
+  parent_mw_dat:
+    command: pah_mw_parent(compound_info = samples, I(sample_column = "unique_id"), I(conc_column = "RESULT"), I(statistic = "average"), I(plot = FALSE))
       
   9_parent_weight/doc/parent_mw_pah.png:
     command: pah_mw_parent(compound_info = samples, I(sample_column = "unique_id"), I(conc_column = "RESULT"), I(statistic = "average"), I(plot = TRUE))
