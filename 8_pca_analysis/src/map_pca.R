@@ -125,10 +125,10 @@ make_map <- function(filename, sample_info, pca_dat, conc_dat) {
   b <- st_bbox(bb_proj)
   
   # create sites data that will be used for plotting
-  sites_df <- left_join(top_pca, distinct(samples[,c('unique_id','Lat', 'Lon')]), by = c("sample" = "unique_id"))
+  sites_df <- left_join(pca_dat, distinct(samples[,c('unique_id','Lat', 'Lon')]), by = c("sample" = "unique_id"))
   sites_df$source_short_name <- as.character(sites_df$source_short_name)
   sites_df$source_short_name[grep("Coal tar dust", sites_df$source_short_name)] <- "Coal tar dust"
-  sites_df <- left_join(sites_df, Priority16, by = c('sample' = 'sample_id'))
+  sites_df <- left_join(sites_df, conc_dat, by = c('sample' = 'sample_id'))
   
   sites_df <- st_as_sf(sites_df,
                        coords = c("Lon","Lat"),
