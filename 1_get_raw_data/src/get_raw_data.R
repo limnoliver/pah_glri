@@ -54,8 +54,12 @@ get_glri6_data <- function(all_sites, all_samples) {
   # filter pcodes to include only those in Austin's list of pcodes (I am assuming)
   # this is complete - maybe verify this
 
-  pcodes.keep <- filter(schedule_5433, `Parameter Code` %in% pah_pcodes) %>%
+  pcodes.keep1 <- filter(schedule_5433, `Parameter Code` %in% pah_pcodes) %>%
     select(`Parameter Code`, `Parameter Name`)
+  
+  pcodes.keep <- schedule_5433[grep('surrogate', schedule_5433$`Parameter Name`, ignore.case = T), ] %>%
+    select(`Parameter Code`, `Parameter Name`) %>%
+    bind_rows(pcodes.keep1)
   
   sites <- all_sites[['STAID']]
   test.site <- sites[26]
