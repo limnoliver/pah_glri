@@ -43,9 +43,9 @@ targets:
     command: get_qa_data(qa_type = I('labcontrol'))
     
   pct_rec_mspikes_5507:
-    command: read.csv(file = I('1_get_raw_data/raw_data/NWQL_prepSpike_recoveries.csv'), 
+    command: read.csv(file = '1_get_raw_data/raw_data/NWQL_prepSpike_recoveries.csv', 
                            skip = I(2), stringsAsFactors = FALSE)
                            
   pct_rec_mspikes_5433:
-    command: read.csv(file = I('1_get_raw_data/raw_data/5433 Set Spike recoveries 0101_2017 to 0101_2018 prep dates v042418.csv'), 
+    command: read.csv(file = '1_get_raw_data/raw_data/5433 Set Spike recoveries 0101_2017 to 0101_2018 prep dates v042418.csv', 
                            skip = I(2), stringsAsFactors = FALSE)
