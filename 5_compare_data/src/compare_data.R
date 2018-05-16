@@ -315,7 +315,7 @@ merge_glri_5433 <- function(dat_glri, dat_5433) {
    
 }
 
-compare_nwql_battelle <- function(merged_dat) {
+compare_nwql_battelle <- function(merged_dat, samples_dat) {
   p <- ggplot(merged_dat, aes(x = RESULT, y = conc_5433)) +
     geom_point(aes(color = PARAM_SYNONYM), alpha = 0.5) +
     geom_abline(slope = 1, intercept = 0)  + 
@@ -344,19 +344,20 @@ compare_nwql_battelle <- function(merged_dat) {
   ##
   head(df)
   df.diff <- filter(df, batelle > 0 & nwql > 0) %>%
-    mutate(perc_diff = round((batelle - nwql)/ifelse(batelle>=nwql, batelle, nwql)*100, 2))
+    mutate(perc_diff = round(((batelle - nwql)/((batelle+nwql)/2))*100, 2))
   
   p <- ggplot(df.diff, aes(x = PARAM_SYNONYM, y = perc_diff)) +
     geom_boxplot() +
     geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
-    coord_cartesian(ylim = c(-130, 130)) +
+    coord_cartesian(ylim = c(-230, 230)) +
     geom_text(label = "Battelle > NWQL", data = data.frame(PARAM_SYNONYM = 1.5, 
-                                                           perc_diff = 120),
+                                                           perc_diff = 220),
               color = "red") +
     geom_text(label = "Battelle < NWQL", data = data.frame(PARAM_SYNONYM = 1.5, 
-                                                           perc_diff = -120),
+                                                           perc_diff = -220),
               color = "red") +
-    labs(y = "Percent Difference Between Labs", x = "") +
+    labs(y = "Relative percent difference", x = "", title = "Percent difference, relative to the mean of the two concentrations",
+         subtitle = "All instances where either lab result was BDL were removed from analysis.") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           panel.grid.minor.y = element_blank())
@@ -388,7 +389,7 @@ compare_nwql_battelle <- function(merged_dat) {
   
   p <- ggplot(totals.long, aes(x = PARAM_SYNONYM, y = prop_conc)) +
     geom_point(aes(color = study, shape = bdl), alpha = 0.7) +
-    facet_wrap(~unique_id, ncol = 7) +
+    facet_wrap(~unique_id, nrow = 7) +
     theme_bw() +
     #scale_y_continuous(trans = "log1p", breaks = c(0, 10, 100, 1000, 10000)) +
     scale_shape_manual(values = c(16, 1)) +
@@ -396,7 +397,7 @@ compare_nwql_battelle <- function(merged_dat) {
     labs(y = "Proportional Concentration", x = "", color = 'Lab', shape = "BDL") +
     theme(strip.text = element_text(size = 6))
   
-  ggsave("5_compare_data/doc/GLRI_battelle_nwql_profiles.png", p, height = 10, width = 8)
+  ggsave("5_compare_data/doc/GLRI_battelle_nwql_profiles.png", p, height = 8, width = 10)
   
 }
 
