@@ -70,8 +70,10 @@ assess_blanks <- function(qa_df = blanks) {
   return(blank_qa)
 }
 
-battelle_pct_rec <- function(qa_df) {
-  names(qa_df)
+battelle_5433_qa_plots <- function() {
+  
+  ## lab control samples or reagent spikes
+  qa_df <- make('pct_rec_labcontrol')
   
   qa_df <- filter(qa_df, !is.na(pct_recovery)) %>%
     filter(compound != "Biphenyl")
@@ -84,13 +86,14 @@ battelle_pct_rec <- function(qa_df) {
   
   qa_df$compound <- factor(qa_df$compound, levels = wt_order$PARAM_SYNONYM)
   
-  ggplot(qa_df, aes(x = compound, y = pct_recovery)) +
+  p <- ggplot(qa_df, aes(x = compound, y = pct_recovery)) +
     geom_boxplot() +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(x = "PAH compounds from low to high molecular weight", y = "% Recovery", title = "Battelle lab control samples (n = 8)")
-  
+    labs(x = "PAH compounds (low to high mol wt)", y = "% recovery", title = "Battelle lab control samples (n = 8)")
+  ggsave('10_qa_summary/doc/battelle_lcs_pctrecovery.png', p, height = 4, width = 6)
   #################
+  pct_rec_mspikes_5433 <- make('pct_rec_mspikes_5433')
   pct_rec_mspikes_5433$Parameter <- gsub('\\[', '\\(', x = pct_rec_mspikes_5433$Parameter)
   pct_rec_mspikes_5433$Parameter <- gsub('\\]', '\\)', x = pct_rec_mspikes_5433$Parameter)
   
@@ -108,10 +111,63 @@ battelle_pct_rec <- function(qa_df) {
   
   s_5433$Parameter <- factor(s_5433$Parameter, levels = wt_order$PARAM_SYNONYM)
   
-  ggplot(s_5433, aes(x = Parameter, y = Median)) +
+  p <- ggplot(s_5433, aes(x = Parameter, y = Median)) +
     geom_boxplot(aes(lower = First.Quartile, upper = Third.Quartile, middle = Median, ymin = Minimum, ymax = Maximum), stat = 'identity') +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    labs(x = "PAH compounds from low to high molecular weight", y = "% Recovery", title = "NWQL schedule 5433 reagent spikes (n = 38)")
+    labs(x = "PAH compounds (low to high mol wt)", y = "% recovery", title = "NWQL schedule 5433 reagent spikes (n = 38)")
+  ggsave('10_qa_summary/doc/nwql5433_reagspike_pctrecovery.png', p, height = 4, width = 6)
+  
+  ################ surrogates ####
+  sur_5433 <- make('pct_rec_surrogates_5433')
+  
+  sur_5433$parameter <- gsub(",\\ssurrogate.*", "", sur_5433$parameter_nm)
+  
+  p <- ggplot(sur_5433, aes(x = parameter, y = result_va)) +
+    geom_boxplot() +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = '', y = "% recovery", title = "NWQL (5433) surrogate recovery (n = 70)")
+  ggsave('10_qa_summary/doc/NWQL5433_surrogates_pctrecovery.png', p, height = 4, width = 4)
+  
+  
+  sur_battelle <- make('pct_rec_surrogates')
+  
+   p <- ggplot(sur_battelle, aes(x = PARAM_SYNONYM, y = RESULT)) +
+    geom_boxplot() +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = '', y = "% recovery", title = "Battelle surrogate recovery (n = 70)")
+  
+  ggsave('10_qa_summary/doc/battelle_surrogates_pctrecovery.png', p, height = 4, width = 4)
+   
+  ######### matrix spikes ######
+  
+  battelle_ms <- make('pct_rec_mspikes')
+  
+  battelle_ms <- filter(battelle_ms, !is.na(pct_recovery)) %>%
+    filter(compound != "Biphenyl")
+  
+  wt_order <- select(samples, PARAM_SYNONYM, molwt) %>%
+    distinct() %>%
+    filter(PARAM_SYNONYM %in% unique(battelle_ms$compound)) %>%
+    filter(PARAM_SYNONYM != "Biphenyl") %>%
+    arrange(molwt)
+  
+  battelle_ms$compound <- factor(battelle_ms$compound, levels = wt_order$PARAM_SYNONYM)
+  
+  # add n values to boxplot
+  give.n <- function(x){
+    return(c(y = median(x), label = length(x)))
+  } 
+  
+  p <- ggplot(battelle_ms, aes(x = compound, y = pct_recovery)) +
+    geom_boxplot() +
+    stat_summary(fun.data = give.n, geom = "text", vjust = -0.3, color = 'red', size = 3) +
+    coord_cartesian(ylim = c(40, 125)) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(x = 'PAH compounds (low to high mol wt)', y = "% recovery", title = "Battelle matrix spike recovery (n values in red)")
+  ggsave('10_qa_summary/doc/battelle_mspikes_pctrecovery.png', p, height = 4, width = 6)
   
 }
