@@ -66,7 +66,4 @@ tox_thresholes <- function(sample_dat) {
   out <- list(site_results, site_results_summary)
   names(out) <- c('results_bysample', 'results_summary')
   return(out)
-  
-  
-    
 }

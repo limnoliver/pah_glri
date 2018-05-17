@@ -127,8 +127,19 @@ make_map <- function(filename, sample_info, thresh_dat) {
   # create categories for color plotting
   thresh_dat <- thresh_dat[[1]]
   
+  # remove sites that don't have all thresholds
+  # (this is the case where esbtu was NA when there was no
+  # TOC data)
+  
+  
   thresh_dat$cat <- NA
   for (i in 1:nrow(thresh_dat)) {
+    
+    # skip rows with NA vals in thresholds
+    if (complete.cases(thresh_dat[i, c('tec_ratio', 'pec_ratio', 'sum_esbtu')]) == FALSE) {
+      next
+    }
+    
   if (thresh_dat$tec_ratio[i] < 1 & thresh_dat$sum_esbtu[i] < 1) {
     thresh_dat$cat[i] <- '< all thresholds'
   } else if (thresh_dat$tec_ratio[i] > 1 & thresh_dat$pec_ratio[i] < 1 & thresh_dat$sum_esbtu[i] < 1){
@@ -143,6 +154,9 @@ make_map <- function(filename, sample_info, thresh_dat) {
     thresh_dat$cat[i] <- '> ESBTU & TEC'
   }
   }
+  
+  thresh_dat <- filter(thresh_dat, !is.na(cat))
+  
   # create sites data that will be used for plotting
   sites_df <- left_join(thresh_dat, distinct(sample_info[,c('unique_id','Lat', 'Lon')]), by = "unique_id")
   
@@ -176,7 +190,7 @@ make_map <- function(filename, sample_info, thresh_dat) {
           #legend.position = c(.75, .75),
           legend.direction = 'horizontal') +
     geom_point(alpha = 0, shape = 16,
-               aes(x = rep(214731.983109861, 71), y = rep(838589.951769598, 71), 
+               aes(x = rep(214731.983109861, nrow(thresh_dat)), y = rep(838589.951769598, nrow(thresh_dat)), 
                    size = sites_proj$sum_EPA16, fill = sites_proj$cat)) + # this is a hack to fix interaction between sf and ggplot2 legend bug
     guides(size = guide_legend(label.position = 'bottom', label.hjust = 0.5,  
                                title = 'Sum PAH16 (ppb)', title.position = 'top', 
