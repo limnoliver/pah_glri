@@ -54,3 +54,16 @@ filter_surrogates_5507 <- function(processed_5507) {
   return(mke)
   
 }
+
+filter_surrogates_5433 <- function(processed_5433) {
+  
+  s_5433 <- processed_5433 %>% 
+    rename(parameter_cd = parm_cd) %>%
+    left_join(parameterCdFile)
+  
+  row.keep <- grep("recovery", s_5433$parameter_nm)
+  s_5433 <- s_5433[row.keep, ] 
+  
+  return(s_5433)
+  
+}
