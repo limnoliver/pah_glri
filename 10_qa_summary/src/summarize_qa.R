@@ -13,7 +13,8 @@ assess_dups <- function(qa_df = duplicates) {
   count_bdl_off <- dup %>%
     group_by(PARAM_SYNONYM) %>%
     summarize(n_both_bdl = length(which(is.nan(perc_diff))),
-              n_one_bdl = length(which(one_bdl)))
+              n_one_bdl = length(which(one_bdl)), 
+              n_duplicates = n())
   
   dup.stats <- filter(dup, one_bdl == FALSE) %>%
     group_by(PARAM_SYNONYM) %>%
@@ -33,12 +34,12 @@ assess_dups <- function(qa_df = duplicates) {
   
   dup.stats <- left_join(dup.stats, count_bdl_off)
   
-  dup.stats[nrow(dup.stats), 7:8] <- c(sum(dup.stats$n_both_bdl, na.rm = T), sum(dup.stats$n_one_bdl, na.rm = T))
+  dup.stats[nrow(dup.stats), 7:9] <- c(sum(dup.stats$n_both_bdl, na.rm = T), sum(dup.stats$n_one_bdl, na.rm = T), sum(dup.stats$n_duplicates, na.rm = T))
   
   return(dup.stats)
 }
 
-assess_blanks <- function(qa_df = blanks) {
+assess_blanks <- function(qa_df) {
   qa <- qa_df %>%
     mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
     filter(!is.na(Parameter)) %>%
@@ -53,9 +54,10 @@ assess_blanks <- function(qa_df = blanks) {
            both_adl = (FB > 0 & SA > 0))
   
   blank_bdl_counts <- group_by(blank, PARAM_SYNONYM) %>%
-    summarize(n_FB_bdl = length(which(FB_bdl == TRUE)),
+    summarize(n_field_blanks = n(), 
+              n_field_blanks_bdl = length(which(FB_bdl == TRUE)),
               n_both_bdl = length(which(both_bdl == TRUE)),
-              n_SA_bdl = length(which(SA_bdl == TRUE)),
+              n_samples_bdl = length(which(SA_bdl == TRUE)),
               n_both_adl = length(which(both_adl == TRUE)))
   
   blank_perc_sample <- filter(blank, both_adl == TRUE) %>%
