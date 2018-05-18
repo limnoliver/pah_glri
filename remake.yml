@@ -10,6 +10,7 @@ targets:
   all:
     depends:
       - 11_mass_fractions
+      - 10_qa_summary
       - 9_parent_weight
       - 8_pca_analysis
       - 7_double_ratios
