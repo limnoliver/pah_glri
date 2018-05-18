@@ -23,6 +23,11 @@ targets:
       - 6_profile_data/doc/profiles_all_selectsources.png
       - 6_profile_data/doc/chi2_allsites_binnedbypriority16.png
       - 6_profile_data/doc/profiles_siteWIMIM_selectsources.png
+      - 6_profile_data/doc/chi2_allsites_nocreasote.pdf
+      - 6_profile_data/doc/conc_vs_sumchi2.pdf
+      - 6_profile_data/doc/profiles_all_selectsources.pdf
+      - 6_profile_data/doc/chi2_allsites_binnedbypriority16.pdf
+      - 6_profile_data/doc/profiles_siteWIMIM_selectsources.pdf
       
   prepped_for_profiles:
     command: prep_profiles(pah_dat = samples)
@@ -45,22 +50,44 @@ targets:
     
   6_profile_data/doc/chi2_allsites_nocreasote.png:
     command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
-                    
+  
+  6_profile_data/doc/chi2_allsites_nocreasote.pdf:
+    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
+                       
   6_profile_data/doc/profiles_highsites_selectsources.png:
     command: profile_plotter(totals = prepped_totals, filename = target_name, filter = I("High"), profile_dat = profiles, plot_type = I("profile"), I(sources_plot = c("CT_dust_7", "Vehicle_traffic_avg", "Tire_particles", "Residential_heating", "Asphalt", "Pine_combustion_1")), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
-                    
+                       
+  6_profile_data/doc/profiles_highsites_selectsources.pdf:
+    command: profile_plotter(totals = prepped_totals, filename = target_name, filter = I("High"), profile_dat = profiles, plot_type = I("profile"), I(sources_plot = c("CT_dust_7", "Vehicle_traffic_avg", "Tire_particles", "Residential_heating", "Asphalt", "Pine_combustion_1")), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
+    
   6_profile_data/doc/conc_vs_sumchi2.png:
     command: plot_conc_chi2(filename = target_name, profile_dat = profiles, totals = prepped_totals)
     # shows how chi2 varies by EPA16 concentration for each source
-    
+  
+  6_profile_data/doc/conc_vs_sumchi2.pdf:
+    command: plot_conc_chi2(filename = target_name, profile_dat = profiles, totals = prepped_totals)
+    # shows how chi2 varies by EPA16 concentration for each source
+  
   6_profile_data/doc/profiles_all_selectsources.png:
     command: profile_plotter(filename = target_name, filter = I(NA), profile_dat = profiles, plot_type = I("profile"), sources_plot = I(c("CTD7", "VAVG", "TIRE", "RESI", "ASP1", "PIN1")), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
     # shows profiles for select sources  
+ 
+  6_profile_data/doc/profiles_all_selectsources.pdf:
+    command: profile_plotter(filename = target_name, filter = I(NA), profile_dat = profiles, plot_type = I("profile"), sources_plot = I(c("CTD7", "VAVG", "TIRE", "RESI", "ASP1", "PIN1")), samples_plot = I("all"), sample_column = I("sample_id"), include_creosote = FALSE)
+    # shows profiles for select sources 
     
   6_profile_data/doc/profiles_siteWIMIM_selectsources.png:
     command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("profile"), sources_plot = I(c("CTD7", "VAVG", "TIRE", "RESI", "ASP1", "PIN1")), samples_plot = I("WI-MIM"), sample_column = I("sample_id"), include_creosote = FALSE)
      # shows profiles for select sources and a select site   
      
+  6_profile_data/doc/profiles_siteWIMIM_selectsources.pdf:
+    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("profile"), sources_plot = I(c("CTD7", "VAVG", "TIRE", "RESI", "ASP1", "PIN1")), samples_plot = I("WI-MIM"), sample_column = I("sample_id"), include_creosote = FALSE)
+     # shows profiles for select sources and a select site
+     
   6_profile_data/doc/chi2_allsites_binnedbypriority16.png:
+    command: facet_by_conc(target_name, profile_dat = profiles, totals = prepped_totals)
+    # shows sum chi2 for all sites, but now paneled by low vs med vs high EPA16 concentration
+    
+  6_profile_data/doc/chi2_allsites_binnedbypriority16.pdf:
     command: facet_by_conc(target_name, profile_dat = profiles, totals = prepped_totals)
     # shows sum chi2 for all sites, but now paneled by low vs med vs high EPA16 concentration
