@@ -27,6 +27,11 @@ targets:
       - 8_pca_analysis/doc/pca_boxplot_creosote.png
       - 8_pca_analysis/doc/pca_boxplot_nocreosote.png
       - 8_pca_analysis/doc/map_closestsource_bysite.png
+      - 8_pca_analysis/doc/pca_components_plot_creosote.pdf
+      - 8_pca_analysis/doc/pca_components_plot_nocreosote.pdf
+      - 8_pca_analysis/doc/pca_boxplot_creosote.pdf
+      - 8_pca_analysis/doc/pca_boxplot_nocreosote.pdf
+      - 8_pca_analysis/doc/map_closestsource_bysite.pdf
       
   pca_creosote:
     command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = TRUE)
@@ -56,3 +61,23 @@ targets:
   8_pca_analysis/doc/map_closestsource_bysite.png:
     command: make_map_pca(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)
     plot: {width: 10, height: 6, unit: 'in', res: 400}
+    
+  8_pca_analysis/doc/pca_components_plot_creosote.pdf:
+    command: plot_pca(pca_creosote, plot_type = I('pca_components'))
+    plot: {width: 10, height: 10}
+    
+  8_pca_analysis/doc/pca_components_plot_nocreosote.pdf:
+    command: plot_pca(pca_no_creosote, plot_type = I('pca_components'))
+    plot: {width: 10, height: 10}
+    
+  8_pca_analysis/doc/pca_boxplot_creosote.pdf:
+    command: plot_pca(pca_creosote, plot_type = I('distance_boxplot'))
+    plot: {width: 8, height: 4}
+    
+  8_pca_analysis/doc/pca_boxplot_nocreosote.pdf:
+    command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'))
+    plot: {width: 8, height: 4}  
+    
+  8_pca_analysis/doc/map_closestsource_bysite.pdf:
+    command: make_map_pca(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)
+    plot: {width: 10, height: 6}
