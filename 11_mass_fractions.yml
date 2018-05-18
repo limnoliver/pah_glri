@@ -12,6 +12,8 @@ targets:
       - percent_by_weight_summary
       - percent_by_weight_bysample
       - 11_mass_fractions/doc/percent_by_weight_bysample.png
+      - 11_mass_fractions/doc/percent_by_weight_bysample.pdf
+
       
   percent_by_weight_summary:
     command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = I('summary'))
@@ -29,3 +31,8 @@ targets:
     # this plots the sample-specific mass fractions using a tile plot, which is colored by 
     # percent mass fraction value categories. Samples are listed from high to low PAH16 concentration(top to bottom), 
     # and sources are listed from low to high reported mean concentration (left to right)
+    
+  11_mass_fractions/doc/percent_by_weight_bysample.pdf:
+    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), conc_unit = I('ppb'), calc_type = I('by_sample'), plot = TRUE)
+    plot: {width: 7, height: 10}
+    # PDF version of above plot
