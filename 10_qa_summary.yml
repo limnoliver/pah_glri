@@ -15,7 +15,6 @@ targets:
     depends:
       - 10_qa_summary/doc/qa_duplicates.csv
       - 10_qa_summary/doc/qa_blanks.csv
-      - battelle_5433_plots
       
   qa_duplicates:
     command: assess_dups(qa_df = duplicates)
