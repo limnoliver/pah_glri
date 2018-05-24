@@ -127,7 +127,7 @@ make_map_pca <- function(sample_info = samples, pca_dat = pca_top_sources_bysite
   sites_df <- left_join(pca_dat, distinct(sample_info[,c('unique_id','Lat', 'Lon')]), by = c("sample" = "unique_id"))
   sites_df$source_short_name <- as.character(sites_df$source_short_name)
   sites_df$source_short_name[grep("Coal tar dust", sites_df$source_short_name)] <- "Coal tar dust"
-  sites_df <- left_join(sites_df, conc_dat, by = c('sample' = 'sample_id'))
+  sites_df <- left_join(sites_df, conc_dat, by = c('sample' = 'unique_id'))
   
   sites_df <- st_as_sf(sites_df,
                        coords = c("Lon","Lat"),
