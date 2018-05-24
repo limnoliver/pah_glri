@@ -89,6 +89,12 @@ qa_duplicates <- make('qa_duplicates')
 
 profiles <- make('profiles')
 
+# this is the step where you can also include or drop creosote as a source, which
+# only has info for 11 compounds. The above target is without creosote. To get the 
+# profiles with creosote:
+
+profiles_creosote <- make('profiles_creosote')
+
 ##################################################
 ######### PCA anaysis ############################
 
