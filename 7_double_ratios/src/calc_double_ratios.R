@@ -19,5 +19,11 @@ order_samples <- function(totals) {
   sample_order <- totals %>%
     arrange(Priority16)
 
-  sample_order <- sample_order$sample_id
+  sample_order <- sample_order$unique_id
+  return(sample_order)
+}
+
+get_ratio_top_sources <- function(ratio_dist) {
+  temp <- ratio_dist$sample
+  return(temp)
 }
