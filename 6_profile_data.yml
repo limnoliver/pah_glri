@@ -11,6 +11,7 @@ include:
   
 sources:
   - 6_profile_data/src/create_profiles.R
+  - 6_profile_data/src/find_top_sources.R
   
 targets:
   6_profile_data:
@@ -19,6 +20,7 @@ targets:
       - prepped_totals
       - profiles
       - profiles_creosote
+      - profiles_top_sources
       - 6_profile_data/doc/chi2_allsites_nocreosote.png
       - 6_profile_data/doc/chi2_allsites_creosote.png
       - 6_profile_data/doc/conc_vs_sumchi2.png
@@ -53,6 +55,9 @@ targets:
   
   profiles_creosote: 
     command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), include_creosote = TRUE)
+    
+  profiles_top_sources: 
+    command: min_sources(prof_dat = profiles)
     
   6_profile_data/doc/chi2_allsites_nocreosote.png:
     command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
