@@ -20,10 +20,10 @@ targets:
       - 12_top_sources_by_site/doc/all_evidence_top_sources.pdf
       
   mix_top_sources:
-    command: read.csv('12_top_sources_by_site/raw/mix_mod_top_sources.csv')
+    command: read.csv('12_top_sources_by_site/raw/mix_mod_top_sources.csv', stringsAsFactors = FALSE)
     
   merged_top_sources:
-    command: merge_top_sources(profile_dat = , ratio_dat = , pca_dat = , mix_dat = )
+    command: merge_top_sources(profile_dat = profiles_top_sources, ratio_dat = ratio_top_sources, pca_dat = pca_top_sources, mix_dat = mix_top_sources, mass_rules = percent_by_weight_bysample)
     
   12_top_sources_by_site/doc/all_evidence_top_sources.png:
     command: 
