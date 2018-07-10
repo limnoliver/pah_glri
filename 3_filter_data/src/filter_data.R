@@ -67,3 +67,12 @@ filter_surrogates_5433 <- function(processed_5433) {
   return(s_5433)
   
 }
+
+filter_characteristics <- function(samples) {
+  sed_char <- filter(samples, CLASS %in% c('SOLIDS', 'TOC', 'GS_P')) %>%
+    select(unique_site_id = unique_id, state = State, watershed = Watershed, lake = Lake, 
+           usgs_station_id = STAID, site_description = Site, latitude = Lat, longitude = Lon, 
+           collection_date = COLLECTION_DATE_NOTIME, parameter = PARAM_SYNONYM, 
+           parameter_description = DESCR, result = RESULT, lab_qualifier = LAB_QUAL, 
+           result_unit = UNIT, detection_limit = DETECT_LIMIT, detection_limit_code = DETECT_LIMIT_CODE)
+}
