@@ -62,13 +62,23 @@ assess_blanks <- function(qa_df) {
   
   blank_perc_sample <- filter(blank, both_adl == TRUE) %>%
     group_by(PARAM_SYNONYM) %>%
-    summarize(mean = mean(blank_perc_sample),
-              median = median(blank_perc_sample),
-              stdev = sd(blank_perc_sample),
-              min = min(blank_perc_sample), 
-              max = max(blank_perc_sample))
+    summarize(mean_perc_samp = mean(blank_perc_sample),
+              median_perc_samp = median(blank_perc_sample),
+              stdev_perc_samp = sd(blank_perc_sample),
+              min_perc_samp = min(blank_perc_sample), 
+              max_perc_samp = max(blank_perc_sample))
   
-  blank_qa <- left_join(blank_bdl_counts, blank_perc_sample)
+  blank_conc <- filter(blank, FB != 0) %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(mean_blank_adl = mean(FB),
+              median_blank_adl = median(FB),
+              stdev_blank_adl = sd(FB),
+              min_blank_adl = min(FB), 
+              max_blank_adl = max(FB))
+  
+  blank_qa <- left_join(blank_bdl_counts, blank_perc_sample) %>%
+    left_join(blank_conc)
+  
   return(blank_qa)
 }
 
