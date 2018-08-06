@@ -7,7 +7,7 @@ assess_dups <- function(qa_df = duplicates) {
   
   dup <- filter(qa, FIELD_QC_CODE != "FB") %>%
     spread(key = FIELD_QC_CODE, value = RESULT) %>%
-    mutate(perc_diff = round(abs((SA-DU)/ifelse(SA>=DU, SA, DU))*100, 2),
+    mutate(perc_diff = round(abs((SA-DU)/((SA+DU)/2))*100, 2),
            one_bdl = (SA==0 & DU > 0)|(SA>0 & DU == 0))
   
   count_bdl_off <- dup %>%
