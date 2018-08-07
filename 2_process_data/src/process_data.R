@@ -59,6 +59,9 @@ process_sample_merge <- function(raw_sample, raw_site){
   # get rid of columns that are unnecessary
   dat.clean <- select(dat.clean, -c(1:7, 14:21))
   
+  # temporary fix for Benzo(a)anthracene - should have a broader match function
+  dat.clean$PARAM_SYNONYM[dat.clean$PARAM_SYNONYM %in% "Benzo(a)anthracene"] <- "Benz(a)anthracene"
+  
   # merge with compound metadata
   dat.clean2 <- get_compound_info(pah_dat = dat.clean, merge_type = 'name', merge_col = 'PARAM_SYNONYM')
   
