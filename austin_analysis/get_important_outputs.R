@@ -16,7 +16,11 @@ library(remake)
 # RStudio console:
 devtools::install_github('limnoliver/pah')
 
-# 3. 'COMMIT' AND 'PUSH' YOUR WORK
+
+# 3. Remake everything by running
+make()
+
+# 4. 'COMMIT' AND 'PUSH' YOUR WORK
 # when working in pah_glri (say, adding your own scripts in 'austin_analysis'), 
 # 'commit' your changes (with a commit message describing what you did) periodically 
 # (I do this about as often as a hit the save button -- be sure to hit save, then commit)
