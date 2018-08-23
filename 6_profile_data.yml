@@ -44,8 +44,11 @@ targets:
     # creates a dataframe of PAH16 totals for each site
     # bins samples by low, medium, high concentrations
     
+  source_subset:
+    command: subset_source_profiles(drop_sources = I("CTD6"))
+    
   profiles:
-    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), include_creosote = FALSE)
+    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), source_profs = source_subset, include_creosote = FALSE)
     # uses pah::pah_profiler to calculate proportional concentrations 
     # for samples, merges with source proportional concentration
     # profiles is a list, first component ("profiles") is actual profiles with proportionate concentrations
@@ -54,7 +57,7 @@ targets:
     # The second list component (sum_chi2) is the sum of the chi2 values for every sample-source combination
   
   profiles_creosote: 
-    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), include_creosote = TRUE)
+    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), source_profs = source_subset, include_creosote = TRUE)
     
   profiles_top_sources: 
     command: min_sources(prof_dat = profiles)

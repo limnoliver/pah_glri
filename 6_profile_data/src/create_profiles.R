@@ -1,3 +1,11 @@
+# get rid of any sources you don't want in analysis
+subset_source_profiles <- function(drop_sources) {
+  dat <- pah::source_profiles %>%
+    select(-drop_sources)
+  
+  return(dat)
+}
+
 # remove all samples where there is a zero - meaning BDL
 prep_profiles <- function(pah_dat) {
   pah_dat <- filter(pah_dat, sourceProfile12 == TRUE) # keep only chemicals in source profiles
