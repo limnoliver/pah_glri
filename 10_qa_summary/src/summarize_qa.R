@@ -104,6 +104,7 @@ battelle_5433_qa_plots <- function() {
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     labs(x = "PAH compounds (low to high mol wt)", y = "% recovery", title = "Battelle lab control samples (n = 8)")
   ggsave('10_qa_summary/doc/battelle_lcs_pctrecovery.png', p, height = 4, width = 6)
+  
   #################
   pct_rec_mspikes_5433 <- make('pct_rec_mspikes_5433')
   pct_rec_mspikes_5433$Parameter <- gsub('\\[', '\\(', x = pct_rec_mspikes_5433$Parameter)
