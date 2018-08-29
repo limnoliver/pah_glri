@@ -19,7 +19,7 @@ targets:
       - prepped_for_profiles
       - prepped_totals
       - profiles
-      - profiles_creosote
+      - profiles_nocreosote
       - profiles_top_sources
       - 6_profile_data/doc/chi2_allsites_nocreosote.png
       - 6_profile_data/doc/chi2_allsites_creosote.png
@@ -45,10 +45,10 @@ targets:
     # bins samples by low, medium, high concentrations
     
   source_subset:
-    command: subset_source_profiles(drop_sources = I("CTD6"))
+    command: subset_source_profiles(drop_sources = I(c("CTD6", "CTR45", "CTR376")))
     
   profiles:
-    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), source_profs = source_subset, include_creosote = FALSE)
+    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), source_profs = source_subset, creosote = I('interpolated'))
     # uses pah::pah_profiler to calculate proportional concentrations 
     # for samples, merges with source proportional concentration
     # profiles is a list, first component ("profiles") is actual profiles with proportionate concentrations
@@ -56,23 +56,24 @@ targets:
     # values in separate columns, along with chi2 difference between the two (chi2).
     # The second list component (sum_chi2) is the sum of the chi2 values for every sample-source combination
   
-  profiles_creosote: 
-    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), source_profs = source_subset, include_creosote = TRUE)
+  profiles_nocreosote: 
+    command: pah_profiler(pah_dat = prepped_for_profiles, compound_column = I("casrn"), sample_column = I("unique_id"), conc_column = I("RESULT"), source_profs = source_subset, creosote = I('drop'))
     
   profiles_top_sources: 
     command: min_sources(prof_dat = profiles)
     
   6_profile_data/doc/chi2_allsites_nocreosote.png:
-    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
+    command: profile_plotter(filename = target_name, profile_dat = profiles_nocreosote, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
   
   6_profile_data/doc/chi2_allsites_nocreosote.pdf:
-    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
+    command: profile_plotter(filename = target_name, profile_dat = profiles_nocreosote, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
                        
-  6_profile_data/doc/chi2_allsites_creosote.png:
-    command: profile_plotter(filename = target_name, profile_dat = profiles_creosote, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
+  6_profile_data/doc/chi2_allsites.png:
+    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))
   
-  6_profile_data/doc/chi2_allsites_creosote.pdf:
-    command: profile_plotter(filename = target_name, profile_dat = profiles_creosote, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))                       
+  6_profile_data/doc/chi2_allsites.pdf:
+    command: profile_plotter(filename = target_name, profile_dat = profiles, plot_type = I("boxplot"), sources = I(NA), samples_plot = I("all"), sample_column = I("unique_id"))                       
+  
   6_profile_data/doc/profiles_highsites_selectsources.png:
     command: profile_plotter(totals = prepped_totals, filename = target_name, filter = I("High"), profile_dat = profiles, plot_type = I("profile"), I(sources_plot = c("CT_dust_7", "Vehicle_traffic_avg", "Tire_particles", "Residential_heating", "Asphalt", "Pine_combustion_1")), samples_plot = I("all"), sample_column = I("unique_id"))
                        
