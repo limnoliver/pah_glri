@@ -35,10 +35,10 @@ targets:
       - 8_pca_analysis/doc/map_closestsource_bysite.pdf
       
   pca_creosote:
-    command: pah_pca(profiles = profiles_creosote, perc_cutoff = 10, sample_column = I("unique_id"))
+    command: pah_pca(profiles = profiles, perc_cutoff = 10, sample_column = I("unique_id"))
     
   pca_no_creosote:
-    command: pah_pca(profiles = profiles, perc_cutoff = 10, sample_column = I('unique_id'))
+    command: pah_pca(profiles = profiles_nocreosote, perc_cutoff = 10, sample_column = I('unique_id'))
     
   pca_top_sources_bysite: 
     command: get_pca_top_sources(pca_dat = pca_no_creosote)
