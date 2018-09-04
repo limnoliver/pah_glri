@@ -93,6 +93,11 @@ qa_duplicates <- make('qa_duplicates')
 
 profiles <- make('profiles')
 
+profiles$profiles
+
+# Sum chi2 values for profiles
+profilesChi2 <- profiles$sum_chi2
+
 # this is the step where you can also include or drop creosote as a source, which
 # only has info for 11 compounds. The above target is without creosote. To get the 
 # profiles with creosote:
