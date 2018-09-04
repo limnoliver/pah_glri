@@ -21,6 +21,11 @@ targets:
       - 7_double_ratios/doc/perc_toprank_by_source.png
       - sample_order_pah16
       - 7_double_ratios/doc/topsource_by_sample.png
+      - 7_double_ratios/doc/double_ratio_plots.pdf
+      - 7_double_ratios/doc/mean_dist_by_source.pdf
+      - 7_double_ratios/doc/perc_toprank_by_source.pdf
+      - 7_double_ratios/doc/topsource_by_sample.pdf
+
       
   ratios:
     command: make_ratios(pah_dat = samples)
@@ -30,7 +35,10 @@ targets:
     # column but are distinguished by the "sample_type" column.
   
   7_double_ratios/doc/double_ratio_plots.png:
-    command: ratio_plot(filename = target_name)
+    command: ratio_plot(filename = target_name, ratio_dat = ratios)
+  
+  7_double_ratios/doc/double_ratio_plots.pdf:
+    command: ratio_plot(filename = target_name, ratio_dat = ratios)
     
   ratio_distance:
     command: calc_ratio_dist(ratio_dat = ratios)
@@ -52,12 +60,22 @@ targets:
     # 3 panels for each double ratio comparison, with colors representing mean rank by source a
     # across all samples, and distance on y axis. 
     
+  7_double_ratios/doc/mean_dist_by_source.pdf:
+    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-mean'))
+    plot: {width: 10, height: 9}
+    # same thing as above, but PDF
+    
   7_double_ratios/doc/perc_toprank_by_source.png:
     command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-top'))
     plot: {width: 10, height: 6, unit: 'in', res: 400}
     # shows how many times each source was ranked as a the closest source to a sample
     # color of bars represent the number of comparisons that were made for each source (because
     # each source did not have all ratio info)
+    
+  7_double_ratios/doc/perc_toprank_by_source.pdf:
+    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-top'))
+    plot: {width: 10, height: 6}
+    # PDF version of above plot
     
   sample_order_pah16:
     command: order_samples(totals = prepped_totals)
@@ -66,4 +84,9 @@ targets:
   7_double_ratios/doc/topsource_by_sample.png:
     command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('sample'), sample_order = sample_order_pah16)
     plot: {width: 6, height: 10, unit: 'in', res: 400}
+    
+  7_double_ratios/doc/topsource_by_sample.pdf:
+    command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('sample'), sample_order = sample_order_pah16)
+    plot: {width: 6, height: 10}
+    # PDF version of above plot
   

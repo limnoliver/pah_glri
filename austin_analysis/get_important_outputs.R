@@ -89,6 +89,12 @@ qa_duplicates <- make('qa_duplicates')
 
 profiles <- make('profiles')
 
+profiles$profiles
+
+# Sum chi2 values for profiles
+profilesChi2 <- profiles$sum_chi2
+
+
 ##################################################
 ######### PCA anaysis ############################
 

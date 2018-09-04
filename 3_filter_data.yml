@@ -12,11 +12,14 @@ sources:
 targets:
   3_filter_data:
     depends:
-      - blanks
+      - field_blanks
       - duplicates
       - samples
+      - pct_rec_surrogates
+      - pct_rec_surrogates_5507
+      - pct_rec_surrogates_5433
  
-  blanks:
+  field_blanks:
     command: filter_blanks(processed_sample)
     # this finds all sites with blanks, and returns blanks plus any samples 
     # or duplicates from the same site for comparison purposes
@@ -29,3 +32,21 @@ targets:
   samples:
     command: filter_samples(processed_sample)
     # excludes blanks and duplicates to just return samples 
+    
+  pct_rec_surrogates:
+    command: filter_surrogates(processed_sample)
+    # % recoverives from Battelle were calculated on surrogates for every sample that was run (n = 71)
+    # this filter provides the percent recoveries from the 4 surrogates in every sample
+    
+  pct_rec_surrogates_5507:
+    command: filter_surrogates_5507(processed_5507)
+    # % recoveries from schedule 5507 that was run in MKE for Austin's study.
+
+    
+  pct_rec_surrogates_5433:
+    command: filter_surrogates_5433(processed_5433)
+    # % recoveries from schedule 5433 that was run on split samples from GLRI sites.
+    # this is all surrogates - not just PAH surrogates.
+
+    
+    

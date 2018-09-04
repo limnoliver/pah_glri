@@ -14,7 +14,8 @@ targets:
     depends:
       - processed_sample_merge
       - processed_sample
-      - processed_mke
+      - processed_5507
+      - processed_5433
   
   processed_sample_merge: 
     command: process_sample_merge(raw_sample, raw_site)
@@ -27,5 +28,10 @@ targets:
                                detect.limit.column = I("DETECT_LIMIT"))
     # turns values BDL into zeros
     
-  processed_mke:
-    command: process_mke()
+  processed_5507:
+    command: process_mke(raw = raw_5507)
+    # turns values BDL into zeros
+    
+  processed_5433:
+    command: process_5433(raw = raw_5433)
+    # turns values BDl into zeros

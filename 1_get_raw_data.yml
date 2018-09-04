@@ -3,6 +3,7 @@ target_default: 1_get_raw_data
 packages:
   - dplyr
   - readxl
+  - tidyr
   
 sources:
   - 1_get_raw_data/src/get_raw_data.R
@@ -12,7 +13,13 @@ targets:
     depends:
       - raw_sample
       - raw_site
-      - raw_glri6
+      - raw_5507
+      - raw_5433
+      - raw_lab_blanks
+      - pct_rec_mspikes
+      - pct_rec_labcontrol
+      - pct_rec_mspikes_5507
+      - pct_rec_mspikes_5433
   
   raw_sample: # read in raw sample concentration data from Batelle
     command: get_samples(file = '1_get_raw_data/raw_data/GLEI CEC Study Data_05Oct2017.xlsx')
@@ -20,8 +27,25 @@ targets:
   raw_site: # read in site metadata for all sites in GLRI study
     command: get_sites(file = '1_get_raw_data/raw_data/GLEI CEC Study Sites.csv')
     
-  raw_mke: # get MKE study data using dataRetrieval, uses pah::get_pah
+  raw_5507: # get MKE study data using dataRetrieval, uses pah::get_pah
     command: get_mke_data()
     
-  raw_glri6:
+  raw_5433:
     command: get_glri6_data(all_sites = raw_site)
+    
+  raw_lab_blanks:
+    command: get_lab_blanks()
+    
+  pct_rec_mspikes:
+    command: get_qa_data(qa_type = I('mspikes'))
+    
+  pct_rec_labcontrol:
+    command: get_qa_data(qa_type = I('labcontrol'))
+    
+  pct_rec_mspikes_5507:
+    command: read.csv(file = '1_get_raw_data/raw_data/NWQL_prepSpike_recoveries.csv', 
+                           skip = I(2), stringsAsFactors = FALSE)
+                           
+  pct_rec_mspikes_5433:
+    command: read.csv(file = '1_get_raw_data/raw_data/5433 Set Spike recoveries 0101_2017 to 0101_2018 prep dates v042418.csv', 
+                           skip = I(2), stringsAsFactors = FALSE)

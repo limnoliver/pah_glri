@@ -6,11 +6,27 @@ packages:
 include:
   - 8_pca_analysis.yml
   
+sources:
+  - 9_parent_weight/src/summary_table.R
+  
 targets:
   9_parent_weight:
     depends:
       - 9_parent_weight/doc/parent_mw_pah.png
+      - 9_parent_weight/doc/parent_mw_pah.pdf
+      - parent_mw_dat
+      - 9_parent_weight/doc/summary_table.csv
+      
+  parent_mw_dat:
+    command: pah_mw_parent(compound_info = samples, I(sample_column = "unique_id"), I(conc_column = "RESULT"), I(statistic = "average"), I(plot = FALSE))
       
   9_parent_weight/doc/parent_mw_pah.png:
     command: pah_mw_parent(compound_info = samples, I(sample_column = "unique_id"), I(conc_column = "RESULT"), I(statistic = "average"), I(plot = TRUE))
     plot: {width: 6, height: 4, unit: 'in', res: 600}
+    
+  9_parent_weight/doc/parent_mw_pah.pdf:
+    command: pah_mw_parent(compound_info = samples, I(sample_column = "unique_id"), I(conc_column = "RESULT"), I(statistic = "average"), I(plot = TRUE))
+    plot: {width: 6, height: 4}
+    
+  9_parent_weight/doc/summary_table.csv:
+    command: summary_table(thresholds = threshold_dat, parent_mw = parent_mw_dat, location = target_name)

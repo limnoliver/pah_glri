@@ -38,6 +38,7 @@ prep_totals <- function(pah_dat) {
 profile_plotter <- function(totals = prepped_totals, filename, filter = NA, 
                             profile_dat, plot_type, sources_plot, samples_plot, sample_column, 
                             include_creosote) {
+  
   if (!is.na(filter)) {
     sites.keep <- totals$sample_id[grep(filter, totals$Priority16_bin)]
     profile_dat[[1]] <- filter(profile_dat[[1]], sample_id %in% sites.keep)

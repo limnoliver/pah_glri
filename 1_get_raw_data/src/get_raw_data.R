@@ -54,8 +54,12 @@ get_glri6_data <- function(all_sites, all_samples) {
   # filter pcodes to include only those in Austin's list of pcodes (I am assuming)
   # this is complete - maybe verify this
 
-  pcodes.keep <- filter(schedule_5433, `Parameter Code` %in% pah_pcodes) %>%
+  pcodes.keep1 <- filter(schedule_5433, `Parameter Code` %in% pah_pcodes) %>%
     select(`Parameter Code`, `Parameter Name`)
+  
+  pcodes.keep <- schedule_5433[grep('surrogate', schedule_5433$`Parameter Name`, ignore.case = T), ] %>%
+    select(`Parameter Code`, `Parameter Name`) %>%
+    bind_rows(pcodes.keep1)
   
   sites <- all_sites[['STAID']]
   test.site <- sites[26]
@@ -64,5 +68,49 @@ get_glri6_data <- function(all_sites, all_samples) {
   glri6_pah <- getPAH(sites, pcodes = pcodes.keep[[1]], startDate, endDate)
 
   return(glri6_pah)
+}
+
+get_qa_data <- function(qa_type) {
+  
+  # get files from raw_data folder
+  file.loc <- "1_get_raw_data/raw_data"
+  sample.files <- list.files(file.loc)
+  sample.files <- grep("S17", sample.files, value = T)
+  sample.files <- grep(".xlsx", sample.files, value = T)
+  
+  all_dat <- data.frame()
+  if (qa_type == 'mspikes'){
+    for (i in sample.files) {
+      # matrix spike recovery
+      temp_dat <- read_excel(file.path(file.loc, i), sheet = "MS", 
+                             skip = 21, col_names = T)
+      temp_dat_filt <- temp_dat[,c(1, grep('recovery', names(temp_dat), ignore.case = T), grep('qualifier', names(temp_dat), ignore.case = T))]
+      temp_dat_filt <- temp_dat_filt[grep("^Naphthalene$", temp_dat_filt[[1]]):grep("perylene", temp_dat_filt[[1]]),]
+      # get rid of estimates in samples where the matrix spike was 
+      # < 5x greater than the sample conc
+      temp_dat_filt$`% Recovery` <- ifelse(temp_dat_filt$Qualifier %in% "n", NA, temp_dat_filt$`% Recovery`)
+      
+      all_dat <- bind_rows(temp_dat_filt, all_dat)
+    }
+    names(all_dat) <- c('compound', 'pct_recovery', 'qualifier')
+  } else {
+    for (i in sample.files) {
+      # matrix spike recovery
+      temp_dat <- read_excel(file.path(file.loc, i), sheet = "LCS", 
+                             skip = 21, col_names = T)
+      temp_dat_filt <- temp_dat[,c(1, grep('recovery', names(temp_dat), ignore.case = T), grep('qualifier', names(temp_dat), ignore.case = T))]
+      temp_dat_filt <- temp_dat_filt[grep("^Naphthalene$", temp_dat_filt[[1]]):grep("perylene", temp_dat_filt[[1]]),]
+      
+      # put into long format
+      rec <- temp_dat_filt[, c(1, grep('recovery', names(temp_dat_filt), ignore.case = T))]
+      rec <- gather(rec, key = 'column', value = 'pct_recovery', -"Units")
+     
+      all_dat <- bind_rows(rec, all_dat)
+    }
+    
+    all_dat <- select(all_dat, -column) %>%
+      rename(compound = Units)
+  }
+  return(all_dat)
 }
   

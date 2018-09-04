@@ -84,13 +84,18 @@ process_nondetects <- function(processed_sample_merge, detect.decision = "zero",
  
 }
 
-process_mke <- function() {
-  mke <- raw_mke
+process_mke <- function(raw = raw_5507) {
+  mke <- raw
   # first, handle zeros in mke data by turning values below dl to 0
   mke$remark_cd[is.na(mke$remark_cd)] <- "d"  # if remark_cd is blank it's a detection
   mke$remark_cd <- ifelse(mke$remark_cd == "E", "d", mke$remark_cd)  # classify Estimated values as detections
   mke$MKE<- ifelse(mke$remark_cd == "d", mke$result_va, 0)
   return(mke)
+}
+
+process_5433 <- function(raw = raw_5433) {
+  mod_5433 <- mutate(raw, conc_5433 = ifelse(remark_cd %in% '<', 0, result_va))
+  return(mod_5433)
 }
 
 

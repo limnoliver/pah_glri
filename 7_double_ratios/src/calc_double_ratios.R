@@ -10,8 +10,8 @@ make_ratios <- function(pah_dat = samples){
   return(ratios)
 }
 
-ratio_plot <- function(filename) {
-  p <- plot_ratios(ratios)
+ratio_plot <- function(filename, ratio_dat) {
+  p <- plot_ratios(ratio_dat)
   ggsave(filename, p, height = 5, width = 16)
 }
 

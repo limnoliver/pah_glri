@@ -158,120 +158,88 @@ merge_studies <- function(sample_dat, comparison_dat) {
   
 }
 
-merge_recovery <- function(sample_dat, comparison_dat) {
+merge_recovery <- function(sample_dat, comparison_dat, sample_rec_sur, 
+                           mke_rec_sur, sample_rec_mspikes, mke_rec_mspikes) {
 
-  # get recovery data from MKE (NWQL) and GLRI (Batelle)
-  mke_recovery <- read.csv('5_compare_data/raw/NWQL_prepSpike_recoveries.csv', 
-                           skip = 2, stringsAsFactors = F)
-  head(mke_recovery)
+  # first, get matrix spikes and summarize
+  #  find median, min, max for battelle mspikes
+  bat_mspikes <- sample_rec_mspikes %>%
+    filter(!is.na(pct_recovery)) %>%
+    group_by(compound) %>%
+    summarize_at(vars(pct_recovery), funs(min, mean, max), na.rm = T) %>%
+    mutate(type = 'mspikes', source = 'Battelle', compound_simple = tolower(gsub("[[:punct:]]", "", compound)))
+
   
-  # get glri recover data
-  file.loc <- "M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data"
-  sample.files <- list.files("M:/QW Monitoring Team/GLRI toxics/GLRI II/WY2017/Data")
-  sample.files <- grep("S17", sample.files, value = T)
-  sample.files <- grep(".xlsx", sample.files, value = T)
-  
-  all_dat <- data.frame()
-  for (i in sample.files) {
-    temp_dat <- read_excel(file.path(file.loc, i), sheet = "MS", 
-                           skip = 21, col_names = T)
-    temp_dat_filt <- temp_dat[,c(1, grep('recovery', names(temp_dat), ignore.case = T), grep('qualifier', names(temp_dat), ignore.case = T))]
-    temp_dat_filt <- temp_dat_filt[grep("^Naphthalene$", temp_dat_filt[[1]]):grep("perylene", temp_dat_filt[[1]]),]
-    # get rid of estimates in samples where the matrix spike was 
-    # < 5x greater than the sample conc
-    temp_dat_filt$`% Recovery` <- ifelse(temp_dat_filt$Qualifier %in% "n", NA, temp_dat_filt$`% Recovery`)
-    
-    all_dat <- bind_cols(temp_dat_filt, all_dat)
-    
-  }
-  # now find median, min, max
-  all_dat <- all_dat[,c(1,2,5,8,11)]
-  all_dat$min <- apply(all_dat[,2:5], 1, FUN = min, na.rm = T)
-  all_dat$min[all_dat$min == Inf] <- NA
-  all_dat$mean <- apply(all_dat[,2:5], 1, FUN = mean, na.rm = T)
-  all_dat$mean[is.nan(all_dat$mean)] <- NA
-  all_dat$max <- apply(all_dat[,2:5], 1, FUN = max, na.rm = T)
-  all_dat$max[all_dat$max == -Inf] <- NA
-  all_dat$type <- "spikes"
-  all_dat$source <- "Battelle"
-  
-  glri_spikes <- all_dat %>%
-    select(Units, min, mean, max, type, source) %>%
-    rename(compound = Units) %>%
-    mutate(compound_simple = tolower(gsub("[[:punct:]]", "", compound))) %>%
-    filter(!is.na(mean))
-  
-  mke_spikes <- select(mke_recovery, Parameter, Minimum, Mean, Maximum) %>%
+  mke_spikes <- select(mke_rec_mspikes, Parameter, Minimum, Mean, Maximum) %>%
     rename(compound = Parameter, min = Minimum, mean = Mean, max = Maximum) %>%
     mutate(compound_simple = tolower(gsub("[[:punct:]]", "", compound))) %>%
-    filter(compound_simple %in% glri_spikes$compound_simple)
-  
-  mke_spikes$type <- 'spikes'
-  mke_spikes$source <- 'NWQL'
+    filter(compound_simple %in% bat_mspikes$compound_simple) %>%
+    mutate(type = 'mspikes', source = 'NWQL_5507')
 
-
-  spikes <- bind_rows(mke_spikes, glri_spikes) %>%
+  mspikes <- bind_rows(mke_spikes, bat_mspikes) %>%
     filter(!is.na(mean)) %>%
     filter(compound_simple != 'biphenyl')
   
-  compound.order <- filter(spikes, source == "Battelle") %>%
+  compound.order <- filter(mspikes, source == "Battelle") %>%
     arrange(mean) %>%
     select(compound_simple)
-  spikes$compound_simple <- factor(spikes$compound_simple, levels = compound.order[[1]])
   
-  
-  
-  
+  mspikes$compound_simple <- factor(mspikes$compound_simple, levels = compound.order[[1]])
+
   #########################################################
-  # merge surrogates from MKE and glri
-  glri_sur_m <- sample_dat %>%
-    filter(UNIT == "PCT_REC") %>%
-    select(PARAM_SYNONYM, RESULT) %>%
+  # get and merge surrogates from MKE and glri
+  # can now get from target in filter 
+  # glri_sur_m <- make('pct_rec_surrogates')
+  glri_sur_m <- sample_rec_sur %>%
     group_by(PARAM_SYNONYM) %>%
     summarize_at(vars(RESULT), funs(min, median, max), na.rm = T)
   
-  glri_sur_q <- sample_dat %>%
-    filter(UNIT == "PCT_REC") %>%
-    select(PARAM_SYNONYM, RESULT) %>%
+  glri_sur_n <- sample_rec_sur %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(count = n())
+  
+  glri_sur_q <- sample_rec_sur %>%
     group_by(PARAM_SYNONYM) %>%
     summarize(first = quantile(RESULT, probs = 0.25),
               third = quantile(RESULT, probs = 0.75))
   
   glri_sur <- left_join(glri_sur_m, glri_sur_q) 
-  glri_sur_names <- glri_sur$PARAM_SYNONYM
-  
+  glri_sur <- left_join(glri_sur, glri_sur_n)
+
+  glri_sur <- data.frame(glri_sur)
+  names(glri_sur) <- glri_sur_m$PARAM_SYNONYM
+
   glri_sur <- select(glri_sur, min, first, median, third, max) %>%
     t()
   
   #compounds <- gsub("-[[:alnum:]]+", "", glri_recovery$PARAM_SYNONYM)
   #compounds <- gsub("\\(", "\\[", compounds)
   #compounds <- gsub("\\)", "\\]", compounds)
-
-  mke <- comparison_dat %>% 
-    rename(parameter_cd = parm_cd) %>%
-    left_join(parameterCdFile)
-  row.keep <- grep("recovery", mke$parameter_nm)
-  mke <- mke[row.keep, ] 
-  mke_names <- unique(mke$parameter_nm)
+  
+  mke_names <- unique(mke_rec_sur$parameter_nm)
   mke_names <- gsub("(^.+)(, surrogate,.+)", "\\1", mke_names, perl = T)
   
-  mke_sur_m <- group_by(mke, parameter_cd) %>%
+  mke_sur_m <- group_by(mke_rec_sur, parameter_cd) %>%
     summarize_at(vars(result_va), funs(min, median, max), na.rm = T)
   
-  mke_sur_q <- group_by(mke, parameter_cd) %>%
+  mke_sur_q <- group_by(mke_rec_sur, parameter_cd) %>%
     summarize(first = quantile(result_va, probs = 0.25),
               third = quantile(result_va, probs = 0.75))
     
   mke_sur <- left_join(mke_sur_m, mke_sur_q) 
 
+  
   mke_sur <- select(mke_sur, min, first, median, third, max) %>%
     t()
   
-  surrogates <- matrix(ncol = 7, nrow = 5)
-  surrogates[,1:7] <- c(glri_sur, mke_sur) 
+  mke_sur <- data.frame(mke_sur)
+  names(mke_sur) <- mke_names
   
-  recoveries <- list(spikes, surrogates)
-  names(recoveries) <- c('spikes', 'surrogates')
+  surrogates <- bind_cols(glri_sur, mke_sur) %>%
+    mutate(variable = row.names(glri_sur))
+  
+  recoveries <- list(mspikes, surrogates)
+  names(recoveries) <- c('mspikes', 'surrogates')
   return(recoveries)
 }
 
@@ -293,6 +261,7 @@ Maximum n value for any compound Battelle = 4, NWQL = 26.")
 }
 
 plot_surrogates <- function(recovery_dat, plot_location) {
+  
   surrogates <- recovery_dat$surrogates
   test <- data.frame(`Percent Recovery` = c(1:21), 
                      Chemicals = c(rep("chem1", 3), rep("chem2", 3),
@@ -346,8 +315,8 @@ merge_glri_5433 <- function(dat_glri, dat_5433) {
    
 }
 
-compare_nwql_battelle <- function(merged_dat) {
-  p <- ggplot(merged, aes(x = RESULT, y = conc_5433)) +
+compare_nwql_battelle <- function(merged_dat, samples_dat) {
+  p <- ggplot(merged_dat, aes(x = RESULT, y = conc_5433)) +
     geom_point(aes(color = PARAM_SYNONYM), alpha = 0.5) +
     geom_abline(slope = 1, intercept = 0)  + 
     labs(x = "Battelle (ppb)", y = "NWQL 5433 (ppb)", color = 'PAH compound') +
@@ -358,14 +327,16 @@ compare_nwql_battelle <- function(merged_dat) {
   ggsave("5_compare_data/doc/GLRI_NWQL_Batelle_comparison_scatter.png", p, height = 4, width = 7)
   
   # break plot out by compound
-  df <- rename(merged, batelle = RESULT, nwql = conc_5433) %>%
+  df <- rename(merged_dat, batelle = RESULT, nwql = conc_5433) %>%
     select(unique_id, batelle, nwql, PARAM_SYNONYM)
-  df.long <- gather(df, study, value, -unique_id, -PARAM_SYNONYM)
+  df.long <- gather(df, study, value, -unique_id, -PARAM_SYNONYM) %>%
+    mutate(bdl = ifelse(value == 0, TRUE, FALSE))
   
   p <- ggplot(df.long, aes(x = reorder(unique_id, value), y = value)) +
-    geom_point(aes(color = study), alpha = 0.8) +
+    geom_point(aes(color = study, shape = bdl), alpha = 0.8) +
     facet_wrap(~PARAM_SYNONYM, ncol = 1) +
     scale_y_continuous(trans = "log1p", breaks = c(0, 10, 100, 1000, 10000)) +
+    scale_shape_manual(values = c(16, 1)) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
     labs(y = "Concentration (ppb)", x = "", color = 'Lab')
   ggsave("5_compare_data/doc/GLRI_batelle_nwql_comparison_bycompound.png", p, height = 8, width = 12)
@@ -373,23 +344,95 @@ compare_nwql_battelle <- function(merged_dat) {
   ##
   head(df)
   df.diff <- filter(df, batelle > 0 & nwql > 0) %>%
-    mutate(perc_diff = round((batelle - nwql)/ifelse(batelle>=nwql, batelle, nwql)*100, 2))
+    mutate(perc_diff = round(((batelle - nwql)/((batelle+nwql)/2))*100, 2))
   
   p <- ggplot(df.diff, aes(x = PARAM_SYNONYM, y = perc_diff)) +
     geom_boxplot() +
     geom_hline(yintercept = 0, color = "red", alpha = 0.8) +
-    coord_cartesian(ylim = c(-130, 130)) +
+    coord_cartesian(ylim = c(-230, 230)) +
     geom_text(label = "Battelle > NWQL", data = data.frame(PARAM_SYNONYM = 1.5, 
-                                                           perc_diff = 120),
+                                                           perc_diff = 220),
               color = "red") +
     geom_text(label = "Battelle < NWQL", data = data.frame(PARAM_SYNONYM = 1.5, 
-                                                           perc_diff = -120),
+                                                           perc_diff = -220),
               color = "red") +
-    labs(y = "Percent Difference Between Labs", x = "") +
+    labs(y = "Relative percent difference", x = "", title = "Percent difference, relative to the mean of the two concentrations",
+         subtitle = "All instances where either lab result was BDL were removed from analysis.") +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1), 
           panel.grid.minor.y = element_blank())
   
   ggsave("5_compare_data/doc/GLRI_battelle_nwql_diff_bycompound.png", p, height = 4, width = 6)
+  
+  
+  # create totals so proportional concentrations can be calculated
+  totals <- group_by(df.long, unique_id, study) %>%
+    summarize(total = sum(value))
+  
+  totals.long <- left_join(df.long, totals) %>%
+    mutate(prop_conc = value/total)
+  
+  totals.long$prop_conc <- ifelse(is.na(totals.long$prop_conc), 0, totals.long$prop_conc)
+ 
+  param_order <- select(samples_dat, PARAM_SYNONYM, molwt) %>%
+    filter(PARAM_SYNONYM %in% unique(totals.long$PARAM_SYNONYM)) %>%
+    distinct() %>%
+    arrange(molwt)
+  
+  site_order <- filter(totals.long, study == "batelle") %>%
+    arrange(total) %>%
+    select(unique_id, total) %>%
+    distinct()
+  
+  totals.long$PARAM_SYNONYM <- factor(totals.long$PARAM_SYNONYM, levels = param_order$PARAM_SYNONYM)
+  totals.long$unique_id <- factor(totals.long$unique_id, levels = site_order$unique_id)
+  
+  p <- ggplot(totals.long, aes(x = PARAM_SYNONYM, y = prop_conc)) +
+    geom_point(aes(color = study, shape = bdl), alpha = 0.7) +
+    facet_wrap(~unique_id, nrow = 7) +
+    theme_bw() +
+    #scale_y_continuous(trans = "log1p", breaks = c(0, 10, 100, 1000, 10000)) +
+    scale_shape_manual(values = c(16, 1)) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+    labs(y = "Proportional Concentration", x = "", color = 'Lab', shape = "BDL") +
+    theme(strip.text = element_text(size = 6))
+  
+  ggsave("5_compare_data/doc/GLRI_battelle_nwql_profiles.png", p, height = 8, width = 10)
+  
+}
+
+compare_spikes <- function(battelle, mspikes_5433) {
+  params <- unique(battelle$compound)
+  
+  mspikes_5433$Parameter <- gsub('\\[', '\\(', x = mspikes_5433$Parameter)
+  mspikes_5433$Parameter <- gsub('\\]', '\\)', x = mspikes_5433$Parameter)
+  
+  params_keep <- mspikes_5433$Parameter[which(mspikes_5433$Parameter %in% params)]
+  
+  s_5433 <- filter(mspikes_5433, Parameter %in% params_keep) %>%
+    select(Parameter, Minimum, Mean, Maximum, Count) %>%
+    mutate(source = 'NWQL_5433')
+  
+  names(s_5433)[1:5] <- c('compound', 'min', 'mean', 'max', 'n')
+  
+  s_battelle <- filter(battelle, compound %in% params_keep) %>%
+    filter(!is.na(pct_recovery)) %>%
+    group_by(compound) %>%
+    summarize_at(vars(pct_recovery), funs(min, mean, max, n())) %>%
+    mutate(source = 'Battelle')
+    
+  merged <- bind_rows(s_5433, s_battelle)
+  
+  p <- ggplot(merged, aes(x =compound, y = mean, group = source)) +
+    geom_point(aes(color = source), size = 4, shape = 15, position = position_dodge(width =0.6)) +
+    geom_pointrange(aes(ymin = min, ymax = max, color = source), position = position_dodge(width =0.6)) +
+    theme_bw() +
+    theme(panel.grid.minor.y = element_blank(), axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(y = "% Recovery from Matrix Spikes", x = "", 
+         title = "Comparison of matrix spike recoveries from NWQL 5433 and Battelle",
+         subtitle = "Values represent the minimum, mean, and maximum reported recoveries. 
+Maximum n value for any compound Battelle = 3, NWQL = 38.")
+  
+  ggsave('5_compare_data/doc/GLRI_battelle_5433_spike_comparison.png', p, height = 4, width = 7)
   
 }

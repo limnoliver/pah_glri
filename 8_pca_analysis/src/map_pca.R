@@ -1,5 +1,4 @@
-
-make_map <- function(filename, sample_info, pca_dat, conc_dat) {
+make_map_pca <- function(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals) {
   
   get_flowlines <- function(streamorder, mapRange){
     postURL <- "https://cida.usgs.gov/nwc/geoserver/nhdplus/ows"
@@ -125,10 +124,10 @@ make_map <- function(filename, sample_info, pca_dat, conc_dat) {
   b <- st_bbox(bb_proj)
   
   # create sites data that will be used for plotting
-  sites_df <- left_join(top_pca, distinct(samples[,c('unique_id','Lat', 'Lon')]), by = c("sample" = "unique_id"))
+  sites_df <- left_join(pca_dat, distinct(sample_info[,c('unique_id','Lat', 'Lon')]), by = c("sample" = "unique_id"))
   sites_df$source_short_name <- as.character(sites_df$source_short_name)
   sites_df$source_short_name[grep("Coal tar dust", sites_df$source_short_name)] <- "Coal tar dust"
-  sites_df <- left_join(sites_df, Priority16, by = c('sample' = 'sample_id'))
+  sites_df <- left_join(sites_df, conc_dat, by = c('sample' = 'sample_id'))
   
   sites_df <- st_as_sf(sites_df,
                        coords = c("Lon","Lat"),
@@ -165,8 +164,8 @@ make_map <- function(filename, sample_info, pca_dat, conc_dat) {
            fill = guide_legend(title.position = 'top', title = "Closest Source by Euclidean distance", order = 1, ncol = 2,
                                override.aes = list(alpha = 0.7, size = 4, color = rev(brewer.pal(6, 'Set1'))))) + 
     theme(legend.box = "vertical")
-  
-  ggsave(filename, p, height = 6, width = 10)
+  return(p)
+  #ggsave(filename, p, height = 6, width = 10)
 }
 
 
