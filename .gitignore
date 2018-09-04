@@ -5,3 +5,4 @@
 */doc/*
 !*/doc/.gitkeep
 .remake
+.Rproj
