@@ -15,11 +15,12 @@ targets:
       - raw_site
       - raw_5507
       - raw_5433
-      - raw_lab_blanks
       - pct_rec_mspikes
       - pct_rec_labcontrol
       - pct_rec_mspikes_5507
       - pct_rec_mspikes_5433
+      - procedural_blanks
+      - lab_duplicates
   
   raw_sample: # read in raw sample concentration data from Batelle
     command: get_samples(file = '1_get_raw_data/raw_data/GLEI CEC Study Data_05Oct2017.xlsx')
@@ -33,8 +34,11 @@ targets:
   raw_5433:
     command: get_glri6_data(all_sites = raw_site)
     
-  raw_lab_blanks:
-    command: get_lab_blanks()
+  procedural_blanks:
+    command: get_qa_data(qa_type = I('pblanks'))
+    
+  lab_duplicates:
+    command: get_qa_data(qa_type = I('labdups'))
     
   pct_rec_mspikes:
     command: get_qa_data(qa_type = I('mspikes'))

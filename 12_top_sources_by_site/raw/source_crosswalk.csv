@@ -1,0 +1,26 @@
+source_name,source_abbreviation
+asphalt-sealed pavement dust,
+brake lining particles,
+concrete parking lot dust,
+creosote-treated wood,CRE1
+creosote-treated wood,CRE2
+creosote-treated wood,CRE3
+CT-sealed pavement dust,CTD6
+CT-sealed pavement dust,CTD7
+CT sealcoat product,CTR1
+CT sealcoat scrapings,
+diesel exhaust/soot,DVEM
+diesel exhaust/soot,DCOM
+gasoline exhaust/soot,GVEM
+gasoline exhaust/soot,GCOM
+"motor oil, unused",
+"motor oil, used",UMO1
+"motor oil, used",UMO2
+road dust,ROAD
+synthetic log combustion,
+tire particles,TIRE
+traffic tunnel dust,TUN1
+traffic tunnel dust,TUN2
+unsealed asphalt pavement dust,ASP1
+unsealed asphalt pavement dust,ASP2
+wood combustion,WCDB

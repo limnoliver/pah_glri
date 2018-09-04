@@ -22,6 +22,7 @@ targets:
       - pca_creosote
       - pca_no_creosote
       - pca_top_sources_bysite
+      - pca_top_sources
       - 8_pca_analysis/doc/pca_components_plot_creosote.png
       - 8_pca_analysis/doc/pca_components_plot_nocreosote.png
       - 8_pca_analysis/doc/pca_boxplot_creosote.png
@@ -34,13 +35,16 @@ targets:
       - 8_pca_analysis/doc/map_closestsource_bysite.pdf
       
   pca_creosote:
-    command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = TRUE)
+    command: pah_pca(profiles = profiles, perc_cutoff = 10, sample_column = I("unique_id"))
     
   pca_no_creosote:
-    command: pah_pca(profiles = profiles, perc_cutoff = 10, include_creosote = FALSE)
+    command: pah_pca(profiles = profiles_nocreosote, perc_cutoff = 10, sample_column = I('unique_id'))
     
   pca_top_sources_bysite: 
     command: get_pca_top_sources(pca_dat = pca_no_creosote)
+    
+  pca_top_sources:
+    command: get_pca_top_sources_simple(pca_dat = pca_no_creosote)
     
   8_pca_analysis/doc/pca_components_plot_creosote.png:
     command: plot_pca(pca_creosote, plot_type = I('pca_components'))

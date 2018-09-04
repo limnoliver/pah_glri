@@ -1,22 +1,27 @@
+# get rid of any sources you don't want in analysis
+subset_source_profiles <- function(drop_sources) {
+  dat <- pah::source_profiles %>%
+    select(-drop_sources)
+  
+  return(dat)
+}
+
 # remove all samples where there is a zero - meaning BDL
 prep_profiles <- function(pah_dat) {
-  pah_dat$sample_id <- paste0(pah_dat$State, "-", pah_dat$STAT_ID)
   pah_dat <- filter(pah_dat, sourceProfile12 == TRUE) # keep only chemicals in source profiles
-  pah_dat.remove <- unique(pah_dat$sample_id[pah_dat$RESULT == 0]) # get rid of pah_dat BDL
-  pah_dat <- filter(pah_dat, !(sample_id %in% pah_dat.remove))
-  pah_dat <- select(pah_dat, sample_id, RESULT, casrn, Lake, State, Watershed) #narrow columns
+  pah_dat.remove <- unique(pah_dat$unique_id[pah_dat$RESULT == 0]) # get rid of pah_dat BDL
+  pah_dat <- filter(pah_dat, !(unique_id %in% pah_dat.remove))
+  pah_dat <- select(pah_dat, unique_id, RESULT, casrn, Lake, State, Watershed) #narrow columns
   return(pah_dat)
 }
 
 # function to pull out pah 16 compounds and order samples by totals
 # then group totals into bins for later plotting
 prep_totals <- function(pah_dat) {
-  pah_dat$sample_id <- paste0(pah_dat$State, "-", pah_dat$STAT_ID)
   samples_16 <- filter(pah_dat, PARAM_SYNONYM == 'Priority Pollutant PAH') %>%
     arrange(RESULT)
-  samples_16$sample_id <- paste0(samples_16$State, "-", samples_16$STAT_ID)
-  samples_16 <- select(samples_16, sample_id, RESULT) %>%
-    group_by(sample_id) %>%
+  samples_16 <- select(samples_16, unique_id, RESULT) %>%
+    group_by(unique_id) %>%
     summarize(Priority16 = mean(RESULT)) %>%
     mutate(Priority16_bin = ntile(Priority16, 4))
   
@@ -36,14 +41,13 @@ prep_totals <- function(pah_dat) {
 }
 
 profile_plotter <- function(totals = prepped_totals, filename, filter = NA, 
-                            profile_dat, plot_type, sources_plot, samples_plot, sample_column, 
-                            include_creosote) {
+                            profile_dat, plot_type, sources_plot, samples_plot, sample_column) {
   
   if (!is.na(filter)) {
-    sites.keep <- totals$sample_id[grep(filter, totals$Priority16_bin)]
-    profile_dat[[1]] <- filter(profile_dat[[1]], sample_id %in% sites.keep)
+    sites.keep <- totals$unique_id[grep(filter, totals$Priority16_bin)]
+    profile_dat[[1]] <- filter(profile_dat[[1]], unique_id %in% sites.keep)
   }
-  p <- plot_profiles(profile_dat, plot_type, sources_plot, samples_plot, sample_column, include_creosote)
+  p <- plot_profiles(profile_dat, plot_type, sources_plot, samples_plot, sample_column)
   ggsave(filename, p, height = 7, width = 10)
 }
 
@@ -71,12 +75,11 @@ plot_conc_chi2 <- function(filename, profile_dat, totals = prepped_totals) {
 # boxplot but facet by concentration
 facet_by_conc <- function(filename, profile_dat, totals) {
   temp_dat <- profile_dat
-  temp_dat[[2]] <- left_join(temp_dat[[2]], totals, by = 'sample_id') %>%
+  temp_dat[[2]] <- left_join(temp_dat[[2]], totals, by = 'unique_id') %>%
     ungroup()
   
   
-  p <- plot_profiles(temp_dat, plot_type = 'boxplot', sources_plot = NA, sample_column = 'sample_id',
-                     include_creosote = F) +
+  p <- plot_profiles(temp_dat, plot_type = 'boxplot', sources_plot = NA, sample_column = 'unique_id') +
     facet_grid(~Priority16_bin)
   
   ggsave(filename, p, height = 5, width = 12)

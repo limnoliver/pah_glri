@@ -93,9 +93,9 @@ get_qa_data <- function(qa_type) {
       all_dat <- bind_rows(temp_dat_filt, all_dat)
     }
     names(all_dat) <- c('compound', 'pct_recovery', 'qualifier')
-  } else {
+  } else if (qa_type == 'labcontrol') {
     for (i in sample.files) {
-      # matrix spike recovery
+      # lab control samples recovery
       temp_dat <- read_excel(file.path(file.loc, i), sheet = "LCS", 
                              skip = 21, col_names = T)
       temp_dat_filt <- temp_dat[,c(1, grep('recovery', names(temp_dat), ignore.case = T), grep('qualifier', names(temp_dat), ignore.case = T))]
@@ -110,6 +110,57 @@ get_qa_data <- function(qa_type) {
     
     all_dat <- select(all_dat, -column) %>%
       rename(compound = Units)
+  } else if (qa_type == 'pblanks') {
+    for (i in sample.files) {
+      # procedural blank samples recovery
+      temp_dat <- read_excel(file.path(file.loc, i), sheet = "PB", 
+                             skip = 23, col_names = F)
+      
+      col_names <- read_excel(file.path(file.loc, i), sheet = "PB", 
+                              skip = 8, col_names = T)
+      col_names <- names(col_names)
+      col_comp <- grep('client', col_names, ignore.case = T)
+      col_vals <- grep('blank', col_names, ignore.case = T)
+      col_codes <- col_vals + 1
+      
+      rows_keep <- grep("^Naphthalene$", temp_dat[[1]]):grep("perylene", temp_dat[[1]])
+      
+      temp_vals_dat <- temp_dat[rows_keep, c(col_comp, col_vals)]
+      names(temp_vals_dat) <- c('compound', paste0('value', 1:(ncol(temp_vals_dat)-1)))
+      long_vals_dat <- gather(temp_vals_dat, key = old_column, value = value, -compound)
+      
+      temp_code_dat <- temp_dat[rows_keep, c(col_comp, col_codes)]
+      names(temp_code_dat) <- c('compound', paste0('value', 1:(ncol(temp_code_dat)-1)))
+      long_code_dat <- gather(temp_code_dat, key = old_column, value = code, -compound)
+      
+      return_dat <- data.frame(compounds = long_vals_dat$compound, 
+                               values = long_vals_dat$value,
+                               codes = long_code_dat$code)
+      
+      all_dat <- bind_rows(all_dat, return_dat)
+    }
+    } else if (qa_type == 'labdups') {
+      
+      for (i in sample.files) {
+        # procedural blank samples recovery
+        temp_dat <- read_excel(file.path(file.loc, i), sheet = "DUP", 
+                               skip = 23, col_names = F, na = c('', 'NA'))
+        
+        col_names <- read_excel(file.path(file.loc, i), sheet = "DUP", 
+                                skip = 21, col_names = T)
+        col_names <- names(col_names)
+        col_keep <- grep('units|rpd|qualifier', col_names, ignore.case = T)
+
+        
+        rows_keep <- grep("^Naphthalene$", temp_dat[[1]]):grep("perylene", temp_dat[[1]])
+        
+        temp_dat_clean <- temp_dat[rows_keep, col_keep]
+        names(temp_dat_clean) <- c('compound', 'RPD', 'qualifier')
+        
+        all_dat <- bind_rows(all_dat, temp_dat_clean)
+      }
+    
+    
   }
   return(all_dat)
 }

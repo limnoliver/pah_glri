@@ -1,0 +1,37 @@
+target_default: 12_top_sources_by_site
+
+packages:
+  - pah
+  - ggplot2
+  - dplyr
+  
+include:
+  - 11_mass_fractions.yml
+  
+sources:
+  - 12_top_sources_by_site/src/merge_top_sources.R
+  
+  
+targets:
+  
+  12_top_sources_by_site:
+    depends:
+      - 12_top_sources_by_site/doc/all_evidence_top_sources.png
+      - 12_top_sources_by_site/doc/all_evidence_top_sources.pdf
+      
+  mix_top_sources:
+    command: read.csv('12_top_sources_by_site/raw/mix_mod_top_sources.csv', stringsAsFactors = FALSE)
+    
+  merged_top_sources:
+    command: merge_top_sources(profile_dat = profiles_top_sources, ratio_dat = ratio_top_sources, pca_dat = pca_top_sources, mix_dat = mix_top_sources, mass_rules = percent_by_weight_bysample)
+    
+  12_top_sources_by_site/doc/all_evidence_top_sources.png:
+    command: 
+    plot: {width: 7, height: 10, unit: 'in', res: 600}
+    # this plot is a first attempt at combining all lines of evidence into 
+    # a single plot that summarizes likely sources by site. 
+    
+  12_top_sources_by_site/doc/all_evidence_top_sources.pdf:
+    command: 
+    plot: {width: 7, height: 10}
+    # PDF version of above plot

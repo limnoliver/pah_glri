@@ -18,6 +18,7 @@ targets:
       - pct_rec_surrogates
       - pct_rec_surrogates_5507
       - pct_rec_surrogates_5433
+      - sediment_char
  
   field_blanks:
     command: filter_blanks(processed_sample)
@@ -47,6 +48,6 @@ targets:
     command: filter_surrogates_5433(processed_5433)
     # % recoveries from schedule 5433 that was run on split samples from GLRI sites.
     # this is all surrogates - not just PAH surrogates.
-
     
-    
+  sediment_char:
+    command: filter_characteristics(samples)

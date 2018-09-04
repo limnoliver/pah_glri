@@ -20,6 +20,7 @@ targets:
       - 7_double_ratios/doc/mean_dist_by_source.png
       - 7_double_ratios/doc/perc_toprank_by_source.png
       - sample_order_pah16
+      - ratio_top_sources
       - 7_double_ratios/doc/topsource_by_sample.png
       - 7_double_ratios/doc/double_ratio_plots.pdf
       - 7_double_ratios/doc/mean_dist_by_source.pdf
@@ -53,6 +54,9 @@ targets:
     # number of times the source was top ranked for any sample-source comparison across the three
     # double ratio plots, divided by the number of comparisons. 
     # 'sample' shows top source by sample for each double ratio plot of interest
+    
+  ratio_top_sources:
+    command: get_ratio_top_sources(ratio_dist = ratio_distance)
     
   7_double_ratios/doc/mean_dist_by_source.png:
     command: plot_ratio_dist(ratio_dist_dat = ratio_distance, plot_type = I('source-mean'))

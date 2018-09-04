@@ -7,7 +7,7 @@ assess_dups <- function(qa_df = duplicates) {
   
   dup <- filter(qa, FIELD_QC_CODE != "FB") %>%
     spread(key = FIELD_QC_CODE, value = RESULT) %>%
-    mutate(perc_diff = round(abs((SA-DU)/ifelse(SA>=DU, SA, DU))*100, 2),
+    mutate(perc_diff = round(abs((SA-DU)/((SA+DU)/2))*100, 2),
            one_bdl = (SA==0 & DU > 0)|(SA>0 & DU == 0))
   
   count_bdl_off <- dup %>%
@@ -62,13 +62,23 @@ assess_blanks <- function(qa_df) {
   
   blank_perc_sample <- filter(blank, both_adl == TRUE) %>%
     group_by(PARAM_SYNONYM) %>%
-    summarize(mean = mean(blank_perc_sample),
-              median = median(blank_perc_sample),
-              stdev = sd(blank_perc_sample),
-              min = min(blank_perc_sample), 
-              max = max(blank_perc_sample))
+    summarize(mean_perc_samp = mean(blank_perc_sample),
+              median_perc_samp = median(blank_perc_sample),
+              stdev_perc_samp = sd(blank_perc_sample),
+              min_perc_samp = min(blank_perc_sample), 
+              max_perc_samp = max(blank_perc_sample))
   
-  blank_qa <- left_join(blank_bdl_counts, blank_perc_sample)
+  blank_conc <- filter(blank, FB != 0) %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(mean_blank_adl = mean(FB),
+              median_blank_adl = median(FB),
+              stdev_blank_adl = sd(FB),
+              min_blank_adl = min(FB), 
+              max_blank_adl = max(FB))
+  
+  blank_qa <- left_join(blank_bdl_counts, blank_perc_sample) %>%
+    left_join(blank_conc)
+  
   return(blank_qa)
 }
 
@@ -94,6 +104,7 @@ battelle_5433_qa_plots <- function() {
     theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
     labs(x = "PAH compounds (low to high mol wt)", y = "% recovery", title = "Battelle lab control samples (n = 8)")
   ggsave('10_qa_summary/doc/battelle_lcs_pctrecovery.png', p, height = 4, width = 6)
+  
   #################
   pct_rec_mspikes_5433 <- make('pct_rec_mspikes_5433')
   pct_rec_mspikes_5433$Parameter <- gsub('\\[', '\\(', x = pct_rec_mspikes_5433$Parameter)
