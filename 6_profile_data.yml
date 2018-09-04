@@ -22,13 +22,13 @@ targets:
       - profiles_nocreosote
       - profiles_top_sources
       - 6_profile_data/doc/chi2_allsites_nocreosote.png
-      - 6_profile_data/doc/chi2_allsites_creosote.png
+      - 6_profile_data/doc/chi2_allsites.png
       - 6_profile_data/doc/conc_vs_sumchi2.png
       - 6_profile_data/doc/profiles_all_selectsources.png
       - 6_profile_data/doc/chi2_allsites_binnedbypriority16.png
       - 6_profile_data/doc/profiles_siteWIMIM_selectsources.png
       - 6_profile_data/doc/chi2_allsites_nocreosote.pdf
-      - 6_profile_data/doc/chi2_allsites_creosote.pdf
+      - 6_profile_data/doc/chi2_allsites.pdf
       - 6_profile_data/doc/conc_vs_sumchi2.pdf
       - 6_profile_data/doc/profiles_all_selectsources.pdf
       - 6_profile_data/doc/chi2_allsites_binnedbypriority16.pdf
