@@ -1,4 +1,4 @@
-# Analysis of 12-compound (and 11-compound?) PAH profiles
+# Analysis of 12-compound PAH profiles
 
 library(remake)
 library(dplyr)
@@ -29,12 +29,12 @@ write.csv(chiSummary, "C:/Users/akbaldwi/Documents/GLRI/PAHs/pah/pah_glri/austin
 #   create correlation matrix to compare sites
 #   rcorr method (Hmisc package)
 
-proCorr <- select(pro, sample_id, abbrev=Abbreviation, prop_conc)
+proCorr <- select(pro, unique_id, abbrev=Abbreviation, prop_conc)
 
 # get unique rows 
 proCorr <- unique(proCorr)
 
-proCorr2 <- dcast(proCorr, abbrev ~ sample_id, value.var="prop_conc")
+proCorr2 <- dcast(proCorr, abbrev ~ unique_id, value.var="prop_conc")
 
 # Correlation matrix: 
 corr <- select(proCorr2, 2:71)
@@ -71,15 +71,15 @@ ratios <- read.csv("C:/Users/akbaldwi/Documents/GLRI/PAHs/pah/pah_glri/9_parent_
 
 # create pyrogenic vs petrogenic column, based on ratios
 ratios$pyroPetro <- ifelse(ratios$parent_alkyl <1 & ratios$HMW_LMW <1, "petrogenic", "pyrogenic")
-ratios <- select(ratios, sample_id=unique_id, pyroPetro)
+ratios <- select(ratios, unique_id, pyroPetro)
 
 # merge pyrogenic/petrogenic column into profiles df
-proCorr <- merge(proCorr, ratios, by="sample_id")
+proCorr <- merge(proCorr, ratios, by="unique_id")
 
 # set order of factors for plotting (low to high mol wt)
 proCorr$abbrev <- factor(proCorr$abbrev, levels=c("Phen","Anth","FluA","Pyr","BaA","Ch","BbF","BkF","BeP","BaP","IndPy","BghiP"))
 
-ggplot(proCorr, aes(x=abbrev, y=prop_conc, group=sample_id, color=pyroPetro))+
+ggplot(proCorr, aes(x=abbrev, y=prop_conc, group=unique_id, color=pyroPetro))+
   geom_line(data=filter(proCorr, pyroPetro=="pyrogenic"),alpha=0.75)+
   geom_point(data=filter(proCorr, pyroPetro=="pyrogenic"),size=1, alpha=0.7)+
   geom_line(data=filter(proCorr, pyroPetro=="petrogenic"),alpha=0.85)+
@@ -96,9 +96,6 @@ ggsave("profiles__of_sites.pdf", width=3.5, height=3., dpi=300)
 ggsave("profiles__of_sites.png", width=3.5, height=3., dpi=300)
 shell.exec("profiles__of_sites.pdf")
 
-###  NEXT:
-# create a mean or median profile for the two groups, 
-#   then use sum chi2 to compare to sources?
 
 
 
