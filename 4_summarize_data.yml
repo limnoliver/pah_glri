@@ -20,14 +20,23 @@ targets:
   4_summarize_data:
     depends:
       - 4_summarize_data/doc/conc_by_watershed.png
+      - 4_summarize_data/doc/conc_by_watershed.pdf
       - threshold_dat
       - 4_summarize_data/doc/map_thresholds.png
+      - 4_summarize_data/doc/map_thresholds.pdf
+
       
   4_summarize_data/doc/conc_by_watershed.png:
+    command: conc_by_site(sample_dat = samples, fig_file_path = target_name)
+    
+  4_summarize_data/doc/conc_by_watershed.pdf:
     command: conc_by_site(sample_dat = samples, fig_file_path = target_name)
     
   threshold_dat:
     command: calc_tox_thresholds(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), compound_column = I('PARAM_SYNONYM'), conc_unit = I('ppb'))
     
   4_summarize_data/doc/map_thresholds.png:
+    command: make_map(filename = target_name, sample_info = samples, thresh_dat = threshold_dat)
+    
+  4_summarize_data/doc/map_thresholds.pdf:
     command: make_map(filename = target_name, sample_info = samples, thresh_dat = threshold_dat)
