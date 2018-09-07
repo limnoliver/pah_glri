@@ -1,8 +1,7 @@
 assess_dups <- function(qa_df = duplicates) {
   
   qa <- qa_df %>%
-    mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
-    filter(!is.na(Parameter)) %>%
+    #filter(!is.na(Parameter)) %>% # this seems to be where chrysenes are being dropped
     select(unique_id, FIELD_QC_CODE, PARAM_SYNONYM, RESULT, molwt)
   
   dup <- filter(qa, FIELD_QC_CODE != "FB") %>%
@@ -25,16 +24,16 @@ assess_dups <- function(qa_df = duplicates) {
               max = max(perc_diff, na.rm = T))
   
   all.pah.means <- dup.stats$mean
-  dup.stats[nrow(dup.stats) +1, 1] <- c("All PAH compounds")
-  dup.stats[nrow(dup.stats), 2:6] <- c(mean(all.pah.means), 
-                                       median(all.pah.means),
-                                       sd(all.pah.means),
-                                       min(all.pah.means),
-                                       max(all.pah.means))
+  # dup.stats[nrow(dup.stats) +1, 1] <- c("All PAH compounds")
+  # dup.stats[nrow(dup.stats), 2:6] <- c(mean(all.pah.means), 
+  #                                      median(all.pah.means),
+  #                                      sd(all.pah.means),
+  #                                      min(all.pah.means),
+  #                                      max(all.pah.means))
   
   dup.stats <- left_join(dup.stats, count_bdl_off)
   
-  dup.stats[nrow(dup.stats), 7:9] <- c(sum(dup.stats$n_both_bdl, na.rm = T), sum(dup.stats$n_one_bdl, na.rm = T), sum(dup.stats$n_duplicates, na.rm = T))
+  #dup.stats[nrow(dup.stats), 7:9] <- c(sum(dup.stats$n_both_bdl, na.rm = T), sum(dup.stats$n_one_bdl, na.rm = T), sum(dup.stats$n_duplicates, na.rm = T))
   
   return(dup.stats)
 }
@@ -42,7 +41,6 @@ assess_dups <- function(qa_df = duplicates) {
 assess_blanks <- function(qa_df) {
   qa <- qa_df %>%
     mutate(unique_id = paste0(State, "-", STAT_ID)) %>%
-    filter(!is.na(Parameter)) %>%
     select(unique_id, FIELD_QC_CODE, PARAM_SYNONYM, RESULT, molwt)
   
   blank <- filter(qa, FIELD_QC_CODE != "DU") %>%
