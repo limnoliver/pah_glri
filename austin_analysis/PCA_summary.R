@@ -14,3 +14,10 @@ distSummary <- group_by(dist, source) %>%
             median = median(euc_dist, na.rm=TRUE),
             mean = mean(euc_dist, na.rm=TRUE))
 
+write.csv(distSummary, "C:/Users/akbaldwi/Documents/GLRI/PAHs/pah/pah_glri/austin_analysis/PCA_euclidean_distances_summary.csv", row.names = F)
+
+
+dat <- pca$pca_dat
+
+varianceSummary <- pca$pca_summary
+
