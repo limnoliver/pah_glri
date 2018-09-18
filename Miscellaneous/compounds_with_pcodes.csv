@@ -1,0 +1,38 @@
+"parameter","CAS_NUM","pcode","battelle_method","battelle_unit","parameter_group_nm","parameter_nm","casrn","srsname","parameter_units"
+"Biphenyl","92-52-4","63752","BDO-5-157","NG/G_DRY","Organics, other","Biphenyl, solids, recoverable, dry weight, micrograms per kilogram","92-52-4","Biphenyl","ug/kg"
+"Acenaphthene","83-32-9","64108","BDO-5-157","NG/G_DRY","Organics, other","Acenaphthene, solids, recoverable, dry weight, micrograms per kilogram","83-32-9","Acenaphthene","ug/kg"
+"Acenaphthylene","208-96-8","64109","BDO-5-157","NG/G_DRY","Organics, other","Acenaphthylene, solids, recoverable, dry weight, micrograms per kilogram","208-96-8","Acenaphthylene","ug/kg"
+"Anthracene","120-12-7","63180","BDO-5-157","NG/G_DRY","Organics, other","Anthracene, solids, recoverable, dry weight, micrograms per kilogram","120-12-7","Anthracene","ug/kg"
+"Benz(a)anthracene","56-55-3","63610","BDO-5-157","NG/G_DRY","Organics, other","Benzo[a]anthracene, solids, recoverable, dry weight, micrograms per kilogram","56-55-3","Benz[a]anthracene","ug/kg"
+"Benzo(a)pyrene","50-32-8","63183","BDO-5-157","NG/G_DRY","Organics, other","Benzo[a]pyrene, solids, recoverable, dry weight, micrograms per kilogram","50-32-8","Benzo[a]pyrene","ug/kg"
+"Benzo(b)fluoranthene","205-99-2","64111","BDO-5-157","NG/G_DRY","Organics, other","Benzo[b]fluoranthene, solids, recoverable, dry weight, micrograms per kilogram","205-99-2","Benzo(b)fluoranthene","ug/kg"
+"Benzo(e)pyrene","192-97-2","64112","BDO-5-157","NG/G_DRY","Organics, other","Benzo[e]pyrene, solids, recoverable, dry weight, micrograms per kilogram","192-97-2","Benzo[e]pyrene","ug/kg"
+"Benzo(g,h,i)perylene","191-24-2","64113","BDO-5-157","NG/G_DRY","Organics, other","Benzo[ghi]perylene, solids, recoverable, dry weight, micrograms per kilogram","191-24-2","Benzo[ghi]perylene","ug/kg"
+"Benzo(k)fluoranthene","207-08-9","64114","BDO-5-157","NG/G_DRY","Organics, other","Benzo[k]fluoranthene, solids, recoverable, dry weight, micrograms per kilogram","207-08-9","Benzo[k]fluoranthene","ug/kg"
+"C1-Chrysenes","BDO-80",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C1-Fluoranthenes/Pyrenes","BDO-77","64132","BDO-5-157","NG/G_DRY","Organics, other","C1-alkylated fluoranthene & pyrene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C1-Fluoranthenes/pyrenes","ug/kg"
+"C1-Fluorenes","BDO-66",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C1-Naphthalenes","BDO-62","64122","BDO-5-157","NG/G_DRY","Organics, other","C1-alkylated naphthalene isomers, solids, recoverable, dry weight, micrograms per kilogram","1321-94-4","Methylnaphthalene","ug/kg"
+"C1-Phenanthrenes/Anthracenes","BDO-69","64127","BDO-5-157","NG/G_DRY","Organics, other","C1-alkylated phenanthrene & anthracene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C1-Phenanthrenes/anthracenes","ug/kg"
+"C2-Chrysenes","BDO-81",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C2-Fluoranthenes/Pyrenes","BDO-78","64133","BDO-5-157","NG/G_DRY","Organics, other","C2-alkylated fluoranthene & pyrene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C2-Fluoranthenes/pyrenes","ug/kg"
+"C2-Fluorenes","BDO-67",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C2-Naphthalenes","BDO-63","64123","BDO-5-157","NG/G_DRY","Organics, other","C2-alkylated naphthalene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C2-Naphthalenes","ug/kg"
+"C2-Phenanthrenes/Anthracenes","BDO-70","64128","BDO-5-157","NG/G_DRY","Organics, other","C2-alkylated phenanthrene & anthracene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C2-Phenanthrenes/anthracenes","ug/kg"
+"C3-Chrysenes","BDO-82",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C3-Fluoranthenes/Pyrenes","BDO-79","64134","BDO-5-157","NG/G_DRY","Organics, other","C3-alkylated fluoranthene & pyrene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C3-Fluoranthenes/pyrenes","ug/kg"
+"C3-Fluorenes","BDO-68",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C3-Naphthalenes","BDO-64","64124","BDO-5-157","NG/G_DRY","Organics, other","C3-alkylated naphthalene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C3-Naphthalenes","ug/kg"
+"C3-Phenanthrenes/Anthracenes","BDO-71","64129","BDO-5-157","NG/G_DRY","Organics, other","C3-alkylated phenanthrene & anthracene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C3-Phenanthrenes/anthracenes","ug/kg"
+"C4-Chrysenes","BDO-83",NA,"BDO-5-157","NG/G_DRY",NA,NA,NA,NA,NA
+"C4-Naphthalenes","BDO-65","64125","BDO-5-157","NG/G_DRY","Organics, other","C4-alkylated naphthalene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C4-Naphthalenes","ug/kg"
+"C4-Phenanthrenes/Anthracenes","BDO-72","64130","BDO-5-157","NG/G_DRY","Organics, other","C4-alkylated phenanthrene & anthracene isomers, solids, recoverable, dry weight, micrograms per kilogram",NA,"C4-Phenanthrenes/anthracenes","ug/kg"
+"Chrysene","218-01-9","64115","BDO-5-157","NG/G_DRY","Organics, other","Chrysene, solids, recoverable, dry weight, micrograms per kilogram","218-01-9","Chrysene","ug/kg"
+"Dibenz(a,h)anthracene","53-70-3","64116","BDO-5-157","NG/G_DRY","Organics, other","Dibenzo[a,h]anthracene, solids, recoverable, dry weight, micrograms per kilogram","53-70-3","Dibenz[a,h]anthracene","ug/kg"
+"Fluoranthene","206-44-0","63208","BDO-5-157","NG/G_DRY","Organics, other","Fluoranthene, solids, recoverable, dry weight, micrograms per kilogram","206-44-0","Fluoranthene","ug/kg"
+"Fluorene","86-73-7","64107","BDO-5-157","NG/G_DRY","Organics, other","9H-Fluorene, solids, recoverable, dry weight, micrograms per kilogram","86-73-7","Fluorene","ug/kg"
+"Indeno(1,2,3-cd)pyrene","193-39-5","64118","BDO-5-157","NG/G_DRY","Organics, other","Indeno[1,2,3-cd]pyrene, solids, recoverable, dry weight, micrograms per kilogram","193-39-5","Indeno[1,2,3-cd]pyrene","ug/kg"
+"Naphthalene","91-20-3","63220","BDO-5-157","NG/G_DRY","Organics, other","Naphthalene, solids, recoverable, dry weight, micrograms per kilogram","91-20-3","Naphthalene","ug/kg"
+"Perylene","198-55-0","64120","BDO-5-157","NG/G_DRY","Organics, other","Perylene, solids, recoverable, dry weight, micrograms per kilogram","198-55-0","Perylene","ug/kg"
+"Phenanthrene","85-01-8","63224","BDO-5-157","NG/G_DRY","Organics, other","Phenanthrene, solids, recoverable, dry weight, micrograms per kilogram","85-01-8","Phenanthrene","ug/kg"
+"Pyrene","129-00-0","63227","BDO-5-157","NG/G_DRY","Organics, other","Pyrene, solids, recoverable, dry weight, micrograms per kilogram","129-00-0","Pyrene","ug/kg"
