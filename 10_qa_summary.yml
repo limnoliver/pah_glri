@@ -15,6 +15,7 @@ targets:
     depends:
       - 10_qa_summary/doc/qa_duplicates.csv
       - 10_qa_summary/doc/qa_blanks.csv
+      - 10_qa_summar/doc/detection_limit_summary.csv
       
   qa_duplicates:
     command: assess_dups(qa_df = duplicates)
@@ -30,3 +31,6 @@ targets:
     
   battelle_5433_plots:
     command: battelle_5433_qa_plots()
+    
+  10_qa_summary/doc/detection_limit_summary.csv:
+    command: assess_bdls(out_file = target_name, pah_df = samples)

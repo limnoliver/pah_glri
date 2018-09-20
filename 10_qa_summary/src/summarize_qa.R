@@ -182,3 +182,16 @@ battelle_5433_qa_plots <- function() {
   ggsave('10_qa_summary/doc/battelle_mspikes_pctrecovery.png', p, height = 4, width = 6)
   
 }
+
+assess_bdls <- function(out_file, pah_df) {
+  bdls <- pah_df %>%
+    group_by(PARAM_SYNONYM) %>%
+    summarize(min_dl = min(DETECT_LIMIT),
+              max_dl = max(DETECT_LIMIT),
+              median_dl = median(DETECT_LIMIT),
+              n_samples_bdl = length(which(RESULT == 0)),
+              n_samples = n()) %>%
+    filter(!is.na(min_dl))
+  
+  write.csv(bdls, out_file, row.names = FALSE)
+}
