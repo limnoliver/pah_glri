@@ -1,6 +1,6 @@
 conc_by_site <- function(sample_dat, fig_file_path) {
   df <- sample_dat
-  df$unique_id <- paste0(df$State, "-", df$STAT_ID)
+  #df$unique_id <- paste0(df$State, "-", df$STAT_ID)
   
   df <- filter(df, PARAM_SYNONYM %in% "Priority Pollutant PAH") %>%
     select(unique_id, RESULT, State, Watershed, STAID, Lake, PARAM_SYNONYM) %>%
@@ -9,18 +9,72 @@ conc_by_site <- function(sample_dat, fig_file_path) {
   
   df$STAID <- as.numeric(df$STAID)
   
-  p <- pah::plot_pah(pah_dat = df, conc_column = 'RESULT', sample_id_column = 'unique_id',
-                     compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
-                     color_column = 'Lake', group_column = 'Watershed', order_column = 'STAID', conc_units = 'ppb')
+ 
+  dfother <- filter(df, Lake != 'Michigan')
+  dfmich <- filter(df, Lake == 'Michigan')
+  # p <- pah::plot_pah(pah_dat = df, conc_column = 'RESULT', sample_id_column = 'unique_id',
+  #                    compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+  #                    color_column = 'Lake', group_column = 'Watershed', order_column = 'STAID', conc_units = 'ppb')
+  # 
+  # p <- pah::plot_pah(pah_dat = df, conc_column = 'RESULT', sample_id_column = 'unique_id',
+  #                    compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+  #                    color_column = 'Lake', order_column = 'STAID', conc_units = 'ppb')
+  # 
+  # p_other <- pah::plot_pah(pah_dat = dfother, conc_column = 'RESULT', sample_id_column = 'unique_id',
+  #                          compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+  #                          color_column = 'Lake', group_column = 'Watershed', order_column = 'STAID', conc_units = 'ppb')
+  # 
+  # p_mich <- pah::plot_pah(pah_dat = dfmich, conc_column = 'RESULT', sample_id_column = 'unique_id',
+  #                         compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+  #                         color_column = 'Lake', group_column = 'Watershed', order_column = 'STAID', 
+  #                         conc_units = 'ppb')
+  # 
+  # barchart_theme <- theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+  #                         legend.position = "top", panel.spacing=unit(5,"pt"), strip.background = element_blank(),
+  #                         strip.text = element_text(margin = margin(4,10,4,10, unit="pt")))
+  p_alt_other <- plot_pah_alt(pah_dat = dfother, all_dat = df, conc_column = 'RESULT', sample_id_column = 'unique_id',
+                              compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+                              color_column = 'Lake', group_column = 'Watershed', group2_column = 'Lake', 
+                              order_column = 'STAID', conc_units = 'ppb', guides = FALSE) +
+    theme(plot.margin = margin(0.1,0,0,0, unit = 'cm'))
+  
+  p_alt_mich <- plot_pah_alt(pah_dat = dfmich, all_dat = df, conc_column = 'RESULT', sample_id_column = 'unique_id',
+                              compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+                              color_column = 'Lake', group_column = 'Watershed', guides = FALSE,
+                             group2_column = 'Lake', order_column = 'STAID', conc_units = 'ppb') +
+    theme(plot.margin = margin(0,0,0,0, unit = 'cm'))
+    
+  
+  
+  dfall <- df
+  dfall$Lake <- factor(dfall$Lake, levels = c('Erie', 'Huron', 'Ontario', 'Superior', 'Michigan'))
+  
+  p_alt_all <- plot_pah_alt(pah_dat = dfall, all_dat = df, conc_column = 'RESULT', sample_id_column = 'unique_id',
+                            compound_column = 'PARAM_SYNONYM', compound_plot = "Priority Pollutant PAH",
+                            color_column = 'Lake', group_column = 'Watershed', group2_column = 'Lake', 
+                            order_column = 'STAID', conc_units = 'ppb') +
+    theme(legend.position = "right", legend.box.margin = margin(0.2, 0.1, 0.1, 0.3, unit = 'cm'),
+          legend.key.size = unit(0.4, "cm"))
+  
   #library(cowplot)
   label1 <- "PEC = 22800 ppb"
   label2 <- "TEC = 1610 ppb"
-  p2 <- cowplot::ggdraw(p) +
-    cowplot::draw_label(label1, x = 0.055, y = 0.815, size = 14, hjust = 0) +
-    cowplot::draw_label(label2, x = 0.055, y = 0.71, size = 14, hjust = 0)
+  pother <- cowplot::ggdraw(p_alt_other) +
+    cowplot::draw_label(label1, x = 0.09, y = 0.93, size = 10, hjust = 0) +
+    cowplot::draw_label(label2, x = 0.09, y = 0.84, size = 10, hjust = 0)
+  
+  pmich <- cowplot::ggdraw(p_alt_mich) +
+    cowplot::draw_label(label1, x = 0.105, y = 0.965, size = 10, hjust = 0) +
+    cowplot::draw_label(label2, x = 0.105, y = 0.895, size = 10, hjust = 0)
+  
+  plegend <- cowplot::get_legend(p_alt_all)
+  
+  p1 <- cowplot::plot_grid(pmich, plegend, rel_widths = c(1, 0.14), align = 'h', axis = 't')
+  p2 <- cowplot::plot_grid(pother, p1, align = 'v', ncol = 1, axis = 'l',
+                     rel_heights = c(0.87, 1))
   
   ggplot2::ggsave(fig_file_path, 
-         p2, height = 6, width = 14)
+         p2, height = 6, width = 7.25)
   
   # had to add "PEC" and "TEC" labels manually because
   # facets weren't wide enough to accomodate the text.

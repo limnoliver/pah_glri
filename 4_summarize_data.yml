@@ -15,6 +15,7 @@ include:
 sources:
   - 4_summarize_data/src/summarize_data.R
   - 4_summarize_data/src/map_thresholds.R
+  - 4_summarize_data/src/plot_pah_alt.R
   
 targets:
   4_summarize_data:
