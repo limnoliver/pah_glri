@@ -47,8 +47,20 @@ profile_plotter <- function(totals = prepped_totals, filename, filter = NA,
     sites.keep <- totals$unique_id[grep(filter, totals$Priority16_bin)]
     profile_dat[[1]] <- filter(profile_dat[[1]], unique_id %in% sites.keep)
   }
-  p <- plot_profiles(profile_dat, plot_type, sources_plot, samples_plot, sample_column)
-  ggsave(filename, p, height = 7, width = 10)
+  if (plot_type == 'boxplot'){
+    abbrev <- FALSE
+  } else {
+    abbrev <- TRUE
+  }
+    p <- plot_profiles(profile_dat, plot_type, sources_plot, samples_plot, sample_column, source_abbreviation = abbrev)
+    if (plot_type == 'boxplot') {
+      ggsave(filename, p, width = 3.64, height = 4) 
+        
+      } else {
+        ggsave(filename, p, width = 8, height = 6)
+      }
+  
+
 }
 
 
