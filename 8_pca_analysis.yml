@@ -55,12 +55,12 @@ targets:
     plot: {width: 10, height: 10, unit: 'in', res: 400}
     
   8_pca_analysis/doc/pca_boxplot_creosote.png:
-    command: plot_pca(pca_creosote, plot_type = I('distance_boxplot'))
-    plot: {width: 8, height: 4, unit: 'in', res: 400}
+    command: plot_pca(pca_creosote, plot_type = I('distance_boxplot'), source_abbreviation = FALSE)
+    plot: {width: 3.64, height: 4, unit: 'in', res: 400}
     
   8_pca_analysis/doc/pca_boxplot_nocreosote.png:
-    command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'))
-    plot: {width: 8, height: 4, unit: 'in', res: 400}  
+    command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'), source_abbreviation = FALSE)
+    plot: {width: 3.64, height: 4, unit: 'in', res: 400}  
     
   8_pca_analysis/doc/map_closestsource_bysite.png:
     command: make_map_pca(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)
@@ -75,12 +75,12 @@ targets:
     plot: {width: 10, height: 10}
     
   8_pca_analysis/doc/pca_boxplot_creosote.pdf:
-    command: plot_pca(pca_creosote, plot_type = I('distance_boxplot'))
-    plot: {width: 8, height: 4}
+    command: plot_pca(pca_creosote, plot_type = I('distance_boxplot'), source_abbreviation = FALSE)
+    plot: {width: 3.64, height: 4}
     
   8_pca_analysis/doc/pca_boxplot_nocreosote.pdf:
-    command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'))
-    plot: {width: 8, height: 4}  
+    command: plot_pca(pca_no_creosote, plot_type = I('distance_boxplot'), source_abbreviation = FALSE)
+    plot: {width: 3.64, height: 4}  
     
   8_pca_analysis/doc/map_closestsource_bysite.pdf:
     command: make_map_pca(sample_info = samples, pca_dat = pca_top_sources_bysite, conc_dat = prepped_totals)
