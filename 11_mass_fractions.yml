@@ -26,13 +26,13 @@ targets:
     # each row is a different sample, and sources are in columns.
     
   11_mass_fractions/doc/percent_by_weight_bysample.png:
-    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), compound_column = I('PARAM_SYNONYM'), conc_unit = I('ppb'), calc_type = I('by_sample'), plot = TRUE)
+    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), compound_column = I('PARAM_SYNONYM'), conc_unit = I('ppb'), calc_type = I('by_sample'), plot = TRUE, sample_order = I('norm_pah_conc'))
     plot: {width: 12, height: 5, unit: 'in', res: 600}
     # this plots the sample-specific mass fractions using a tile plot, which is colored by 
     # percent mass fraction value categories. Samples are listed from high to low PAH16 concentration(top to bottom), 
     # and sources are listed from low to high reported mean concentration (left to right)
     
   11_mass_fractions/doc/percent_by_weight_bysample.pdf:
-    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), compound_column = I('PARAM_SYNONYM'), conc_unit = I('ppb'), calc_type = I('by_sample'), plot = TRUE)
+    command: calc_mass_fractions(compound_info = samples, sample_column = I('unique_id'), conc_column = I('RESULT'), compound_column = I('PARAM_SYNONYM'), conc_unit = I('ppb'), calc_type = I('by_sample'), plot = TRUE, sample_order = I('norm_pah_conc'))
     plot: {width: 12, height: 5}
     # PDF version of above plot
