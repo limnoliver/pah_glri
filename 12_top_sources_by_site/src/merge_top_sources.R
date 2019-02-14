@@ -1,20 +1,42 @@
-merge_top_sources <- function(profile_top = , ratio_top = , pca_top = , mix_top =) {
-  pca_top$top_source <- as.character(pca_top$top_source)
+merge_top_sources <- function(profiles_top, pca_top, pmf_dat, sample_order) {
   
-  top_sources <- rename(ratio_top,
-                        unique_id = sample, 
-                        ratio1 = top_source1,
-                        ratio2 = top_source2,
-                        ratio3 = top_source3) %>%
-    left_join(rename(profile_top, profile = top_source)) %>%
-    left_join(rename(pca_top, unique_id = sample, pca = top_source)) %>%
-    left_join(rename(mix_top, mix = top_source))
+  
+  order <- data.frame(sample = sample_order, rank = 1:length(sample_order), stringsAsFactors = F)
+  
+  pca_top <- rename(pca_top, pca_top_sources = top_source, pca_distance = top_distance)
+  profiles_top <- rename(profiles_top, profiles_top_sources = top_source, profiles_distance = top_distance)
+  parent_weight <- parent_mw_dat[[2]] %>%
+    select(unique_id, parent_alkyl, HMW_LMW)
+  
+  
+  top_sources <- left_join(pca_top, profiles_top, by = c('sample' = 'unique_id')) %>%
+    left_join(parent_weight, by = c('sample' = 'unique_id'))
+  
+  unique_top_sources <- unique(c(as.character(top_sources$pca_top_sources), top_sources$profiles_top_sources))
+  
+  
+  
+  
+  
+  #my.cols <- colorRampPalette(rev(RColorBrewer::brewer.pal(8, 'RdBu')))
+  my_cols = qualitative_hcl(length(unique_top_sources), "Dark 3")
+  my.cols <- data.frame(my_cols = qualitative_hcl(length(unique_top_sources), "Dark 3"),
+                        sources = unique_top_sources, stringsAsFactors = FALSE)
+  
+  top_sources <- top_sources %>%
+    mutate(`HMW:LMW` = ifelse(HMW_LMW > 1, 'pyro', 'petro'),
+           `Parent:Alkyl` = ifelse(parent_alkyl > 1, 'pyro', 'petro')) %>%
+    left_join(rename(my.cols, pca_top_sources = sources, pca_colors = my_cols)) %>%
+    left_join(rename(my.cols, profiles_top_sources = sources, profiles_colors = my_cols)) %>%
+    left_join(select(pmf_top, sample = site, pmf_top_sources = dominantSource)) %>%
+    left_join(order) %>%
+    rename(`PCA top source` = pca_top_sources,
+           `Profiles top source` = profiles_top_sources) %>%
+    arrange(sample)
+  
   
   return(top_sources)
   
-  # output list of unique sources
-  all.top <- unique(c(top_sources$ratio1, top_sources$ratio2, top_sources$ratio3, top_sources$profile, top_sources$pca))
-  write.csv(all.top, '12_top_sources_by_site/doc/unique_top_sources.csv', row.names = F)
 }
 
 calc_mass_rules <- function(top = merged_top_sources, mass_rules = percent_by_weight_bysample) {
