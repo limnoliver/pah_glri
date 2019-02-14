@@ -2,7 +2,8 @@ get_pca_top_sources <- function(pca_dat) {
   
   pca_dat <- pca_dat[[3]]
   top_sources <- group_by(pca_dat, sample) %>%
-    summarize(top_source = source[which.min(euc_dist)])
+    summarize(top_source = source[which.min(euc_dist)],
+              top_distance = min(euc_dist))
   
   source.names <- pah::sources
   
@@ -15,7 +16,8 @@ get_pca_top_sources_simple <- function(pca_dat) {
   
   pca_dat <- pca_dat[[3]]
   top_sources <- group_by(pca_dat, sample) %>%
-    summarize(top_source = source[which.min(euc_dist)])
+    summarize(top_source = source[which.min(euc_dist)],
+              top_distance = min(euc_dist))
   
   return(top_sources)
   
